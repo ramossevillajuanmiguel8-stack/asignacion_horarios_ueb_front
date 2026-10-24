@@ -1,0 +1,24 @@
+<div class="sidebar">
+  <div class="logo">
+    <h2>UEB</h2>
+    <p>Asignación de Horarios</p>
+  </div>
+
+  <mat-nav-list>
+    @for (item of menu; track item.ruta) {
+      <a
+        mat-list-item
+        [routerLink]="item.ruta"
+        routerLinkActive="activo">
+
+        <mat-icon matListItemIcon>
+          {{ item.icono }}
+        </mat-icon>
+
+        <span matListItemTitle>
+          {{ item.nombre }}
+        </span>
+      </a>
+    }
+  </mat-nav-list>
+</div>

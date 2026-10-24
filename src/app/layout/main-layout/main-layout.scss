@@ -1,0 +1,16 @@
+.contenedor {
+  height: 100vh;
+}
+
+.menu-lateral {
+  width: 250px;
+  border-radius: 0;
+  background: #8b1538;
+}
+
+.contenido {
+  padding: 24px;
+  background: #f5f6fa;
+  min-height: calc(100vh - 64px);
+  box-sizing: border-box;
+}

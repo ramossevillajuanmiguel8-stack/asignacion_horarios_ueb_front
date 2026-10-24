@@ -1,0 +1,41 @@
+<div class="dashboard">
+
+  <h1>Panel de Control</h1>
+  <p class="subtitulo">
+    Bienvenido al Sistema de Asignación de Horarios UEB
+  </p>
+
+  <div class="tarjetas">
+
+    @for (item of estadisticas; track item.titulo) {
+      <mat-card class="tarjeta">
+        <mat-card-content>
+
+          <mat-icon>{{ item.icono }}</mat-icon>
+
+          <h2>{{ item.valor }}</h2>
+
+          <p>{{ item.titulo }}</p>
+
+        </mat-card-content>
+      </mat-card>
+    }
+
+  </div>
+
+  <mat-card class="seccion-horarios">
+    <mat-card-header>
+      <mat-card-title>
+        Resumen de horarios académicos
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p>
+        Los horarios aparecerán aquí cuando conectemos
+        el frontend con el backend.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+</div>
