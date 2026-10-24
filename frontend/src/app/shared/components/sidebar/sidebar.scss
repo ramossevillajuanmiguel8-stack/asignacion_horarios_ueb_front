@@ -1,0 +1,43 @@
+.sidebar {
+  height: 100%;
+  background: #8b1538;
+  color: white;
+
+  .logo {
+    padding: 24px 16px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+    h2 {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 700;
+      color: white;
+    }
+
+    p {
+      font-size: 13px;
+      margin-top: 5px;
+      color: white;
+    }
+  }
+
+  a[mat-list-item] {
+    margin: 5px 8px;
+    width: calc(100% - 16px);
+    border-radius: 8px;
+
+    --mdc-list-list-item-label-text-color: white;
+    --mdc-list-list-item-leading-icon-color: white;
+    --mdc-list-list-item-hover-label-text-color: white;
+    --mdc-list-list-item-focus-label-text-color: white;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    &.activo {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
