@@ -1,0 +1,123 @@
+<h2 mat-dialog-title>
+  <mat-icon>menu_book</mat-icon>
+  Asignaturas habilitadas
+</h2>
+
+<mat-dialog-content>
+
+  <div class="docente-info">
+
+    <h3>{{ docente.nombre }}</h3>
+
+    <p>
+      Selecciona las asignaturas que este
+      docente está autorizado para impartir.
+    </p>
+
+  </div>
+
+  @if (cargando()) {
+
+    <div class="estado">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando asignaturas...</p>
+    </div>
+
+  } @else {
+
+    <mat-form-field
+      appearance="outline"
+      class="buscador">
+
+      <mat-label>Buscar asignatura</mat-label>
+
+      <mat-icon matPrefix>search</mat-icon>
+
+      <input
+        matInput
+        [ngModel]="filtro()"
+        (ngModelChange)="filtro.set($event)"
+        placeholder="Código o nombre">
+
+    </mat-form-field>
+
+    <div class="lista-cursos">
+
+      @for (curso of cursosFiltrados(); track curso.id) {
+
+        <div class="curso-item">
+
+          <mat-checkbox
+            [checked]="estaSeleccionado(curso.id)"
+            (change)="cambiarSeleccion(
+              curso.id,
+              $event.checked
+            )">
+
+            <div class="curso-info">
+              <strong>{{ curso.nombre }}</strong>
+
+              <span>
+                {{ curso.codigo || 'Sin código' }}
+              </span>
+            </div>
+
+          </mat-checkbox>
+
+        </div>
+
+      } @empty {
+
+        <div class="estado">
+          <mat-icon>search_off</mat-icon>
+          <p>No se encontraron asignaturas.</p>
+        </div>
+
+      }
+
+    </div>
+
+    <p class="contador">
+      {{ seleccionados().size }}
+      asignatura(s) habilitada(s)
+    </p>
+
+  }
+
+  @if (error()) {
+
+    <div class="mensaje-error" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error() }}</span>
+    </div>
+
+  }
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <button
+    mat-button
+    type="button"
+    [disabled]="guardando()"
+    (click)="cerrar()">
+    Cancelar
+  </button>
+
+  <button
+    mat-flat-button
+    type="button"
+    [disabled]="guardando() || cargando() || !!error()"
+    (click)="guardar()">
+
+    @if (guardando()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      <mat-icon>save</mat-icon>
+      Guardar cambios
+    }
+
+  </button>
+
+</mat-dialog-actions>

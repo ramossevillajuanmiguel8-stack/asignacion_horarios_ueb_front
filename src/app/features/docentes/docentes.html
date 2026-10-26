@@ -86,6 +86,15 @@
                                 matTooltip="Ver restricciones horarias">
                                 <mat-icon>calendar_month</mat-icon>
                             </button>
+                            
+                            <button mat-icon-button type="button" (click)="administrarCursos(docente)"
+                                [attr.aria-label]="
+                                   'Administrar asignaturas de ' + docente.nombre
+                                   " title="Administrar asignaturas habilitadas">
+
+                                <mat-icon>menu_book</mat-icon>
+
+                            </button>
                         </td>
                     </ng-container>
 

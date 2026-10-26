@@ -1,0 +1,207 @@
+<h2 mat-dialog-title>
+    <mat-icon>group_add</mat-icon>
+    Nuevo grupo académico
+</h2>
+
+<mat-dialog-content>
+
+    <form id="formulario-grupo" [formGroup]="formulario" (ngSubmit)="guardar()">
+
+        <div class="periodo-info">
+            <strong>Período: {{ datos.periodo.nombre }}</strong>
+            <span>
+                Duración de bloque:
+                {{ datos.periodo.duracionBloqueMin }} min
+            </span>
+        </div>
+
+        <div class="campos">
+
+            <mat-form-field appearance="outline">
+                <mat-label>Asignatura</mat-label>
+
+                <mat-select formControlName="cursoId">
+                    @for (curso of cursosCompatibles; track curso.id) {
+                    <mat-option [value]="curso.id">
+                        {{ curso.codigo || 'Sin código' }} -
+                        {{ curso.nombre }}
+                    </mat-option>
+                    }
+                </mat-select>
+
+                @if (formulario.controls.cursoId.invalid) {
+                <mat-error>Selecciona una asignatura.</mat-error>
+                }
+            </mat-form-field>
+
+            @if (cursosCompatibles.length === 0) {
+            <p class="aviso">
+                No hay asignaturas compatibles con la duración
+                y el máximo de sesiones de este período.
+            </p>
+            }
+
+            <div class="seleccion-docente">
+
+                <mat-form-field appearance="outline">
+
+                    <mat-label>Docente responsable</mat-label>
+
+                    <mat-select formControlName="docenteId">
+
+                        @for (
+                        docente of docentesHabilitados();
+                        track docente.id
+                        ) {
+                        <mat-option [value]="docente.id">
+                            {{ docente.nombre }}
+                        </mat-option>
+                        }
+
+                    </mat-select>
+
+                    @if (formulario.controls.docenteId.invalid) {
+                    <mat-error>
+                        Selecciona un docente habilitado.
+                    </mat-error>
+                    }
+
+                </mat-form-field>
+
+                @if (cargandoDocentes()) {
+
+                <div class="mensaje-docentes">
+                    <mat-spinner diameter="20"></mat-spinner>
+                    <span>Consultando docentes habilitados...</span>
+                </div>
+
+                } @else if (errorDocentes()) {
+
+                <div class="mensaje-docentes error">
+                    <mat-icon>error_outline</mat-icon>
+                    <span>{{ errorDocentes() }}</span>
+                </div>
+
+                } @else if (
+                cursoSeleccionado() !== null &&
+                docentesHabilitados().length === 0
+                ) {
+
+                <div class="mensaje-docentes advertencia">
+                    <mat-icon>warning_amber</mat-icon>
+
+                    <span>
+                        Esta asignatura no tiene docentes habilitados.
+                        Debes asignarlos desde Gestión de Docentes.
+                    </span>
+                </div>
+
+                } @else if (docentesHabilitados().length > 0) {
+
+                <div class="mensaje-docentes correcto">
+                    <mat-icon>check_circle</mat-icon>
+
+                    <span>
+                        {{ docentesHabilitados().length }}
+                        docente(s) habilitado(s) para esta asignatura.
+                    </span>
+                </div>
+
+                }
+
+            </div>
+
+            <div class="grid-campos">
+                <mat-form-field appearance="outline">
+                    <mat-label>Código del grupo</mat-label>
+
+                    <input matInput formControlName="codigo" maxlength="10" placeholder="Ej: G01">
+
+                    @if (formulario.controls.codigo.invalid) {
+                    <mat-error>El código es obligatorio.</mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Estudiantes inscritos</mat-label>
+
+                    <input matInput type="number" min="0" max="32767" step="1" formControlName="inscritos">
+                </mat-form-field>
+            </div>
+
+            <h3>Capacidad del grupo</h3>
+
+            <div class="periodo-info">
+                <span>
+                    Cupo máximo base:
+                    {{ datos.periodo.cupoMaximoBase }}
+                </span>
+                <span>
+                    Cupo mínimo:
+                    {{ datos.periodo.cupoMinimo }}
+                </span>
+                <span>
+                    Tolerancia:
+                    {{ datos.periodo.toleranciaCupoPct }} %
+                </span>
+            </div>
+
+            <mat-checkbox [checked]="personalizarCupos()" (change)="cambiarCupos($event.checked)">
+                Personalizar los cupos del grupo
+            </mat-checkbox>
+
+            @if (personalizarCupos()) {
+            <div class="grid-campos">
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Cupo máximo</mat-label>
+
+                    <input matInput type="number" min="1" max="32767" step="1" formControlName="cupoMaximo">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Cupo mínimo</mat-label>
+
+                    <input matInput type="number" min="0" max="32767" step="1" formControlName="cupoMinimo">
+                </mat-form-field>
+
+            </div>
+            }
+
+            <p class="aviso">
+                Los grupos con inscritos por debajo del cupo mínimo
+                quedarán identificados como candidatos a cierre.
+            </p>
+
+        </div>
+
+        @if (error()) {
+        <p class="mensaje-error" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            {{ error() }}
+        </p>
+        }
+
+    </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+    <button mat-button type="button" [disabled]="guardando()" (click)="cancelar()">
+        Cancelar
+    </button>
+
+    <button mat-flat-button type="submit" form="formulario-grupo"
+        [disabled]="guardando() || cursosCompatibles.length === 0">
+
+        @if (guardando()) {
+        <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+        <mat-icon>save</mat-icon>
+        Guardar grupo
+        }
+
+    </button>
+
+</mat-dialog-actions>

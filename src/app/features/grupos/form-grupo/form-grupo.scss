@@ -1,0 +1,130 @@
+:host {
+  display: block;
+}
+
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  mat-icon {
+    color: #8b1538;
+  }
+}
+
+mat-dialog-content {
+  width: min(620px, 88vw);
+  max-height: 72vh;
+}
+
+.periodo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #f5f1f3;
+  color: #5c3542;
+  border-radius: 10px;
+  padding: 14px;
+  margin: 12px 0;
+  font-size: 13px;
+}
+
+.campos {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 14px;
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  h3 {
+    color: #8b1538;
+    font-size: 17px;
+    margin: 12px 0 0;
+  }
+}
+
+.grid-campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.aviso {
+  background: #fff5e6;
+  color: #805200;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.mensaje-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #a11616;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fde8e8;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+}
+
+@media (max-width: 600px) {
+  mat-dialog-content {
+    width: 100%;
+  }
+
+  .grid-campos {
+    grid-template-columns: 1fr;
+  }
+}
+
+.seleccion-docente {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.mensaje-docentes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px;
+  border-radius: 8px;
+
+  background: #f5f6fa;
+  color: #555;
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  mat-icon {
+    flex-shrink: 0;
+  }
+}
+
+.mensaje-docentes.correcto {
+  background: #e5f5eb;
+  color: #176b3a;
+}
+
+.mensaje-docentes.advertencia {
+  background: #fff1db;
+  color: #805200;
+}
+
+.mensaje-docentes.error {
+  background: #fde8e8;
+  color: #a11616;
+}

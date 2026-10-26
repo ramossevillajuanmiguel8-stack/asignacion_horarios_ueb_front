@@ -40,3 +40,8 @@ export interface CrearDocenteResponse {
   id: number;
   nombre: string;
 }
+
+export interface DocenteHabilitado {
+  id: number;
+  nombre: string;
+}

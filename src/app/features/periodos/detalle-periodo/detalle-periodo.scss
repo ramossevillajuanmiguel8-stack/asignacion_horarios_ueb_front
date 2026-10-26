@@ -1,0 +1,57 @@
+:host {
+  display: block;
+}
+
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  mat-icon {
+    color: #8b1538;
+  }
+}
+
+mat-dialog-content {
+  width: min(620px, 85vw);
+  max-height: 70vh;
+}
+
+.detalle {
+  padding: 8px 0;
+
+  h3 {
+    color: #8b1538;
+    font-size: 17px;
+    font-weight: 700;
+    margin: 24px 0 12px;
+
+    &:first-child {
+      margin-top: 8px;
+    }
+  }
+}
+
+.fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+
+  span {
+    color: #666;
+  }
+
+  strong {
+    text-align: right;
+  }
+}
+
+@media (max-width: 600px) {
+  mat-dialog-content {
+    width: 100%;
+  }
+}

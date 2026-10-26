@@ -15,6 +15,7 @@ export class Sidebar {
     { nombre: 'Dashboard', icono: 'dashboard', ruta: '/dashboard' },
     { nombre: 'Docentes', icono: 'people', ruta: '/docentes' },
     { nombre: 'Asignaturas', icono: 'menu_book', ruta: '/asignaturas' },
+    {nombre: 'Períodos',icono: 'date_range',ruta: '/periodos' },
     { nombre: 'Aulas', icono: 'meeting_room', ruta: '/aulas' },
     { nombre: 'Grupos', icono: 'groups', ruta: '/grupos' },
     { nombre: 'Horarios', icono: 'calendar_month', ruta: '/horarios' },

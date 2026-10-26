@@ -1,0 +1,83 @@
+<h2 mat-dialog-title>
+    <mat-icon>event</mat-icon>
+    Nuevo período académico
+</h2>
+
+<mat-dialog-content>
+
+    <form id="formulario-periodo" [formGroup]="formulario" (ngSubmit)="guardar()">
+
+        <div class="campos">
+
+            <mat-form-field appearance="outline">
+                <mat-label>Nombre del período</mat-label>
+
+                <input matInput formControlName="nombre" maxlength="20" placeholder="Ej: 2027-1">
+
+                @if (formulario.controls.nombre.hasError('required')) {
+                <mat-error>El nombre es obligatorio.</mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Fecha de inicio</mat-label>
+
+                <input matInput type="date" formControlName="fechaInicio">
+
+                @if (formulario.controls.fechaInicio.hasError('required')) {
+                <mat-error>Selecciona la fecha de inicio.</mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Fecha de finalización</mat-label>
+
+                <input matInput type="date" formControlName="fechaFin">
+
+                @if (formulario.controls.fechaFin.hasError('required')) {
+                <mat-error>Selecciona la fecha de finalización.</mat-error>
+                }
+            </mat-form-field>
+
+            <div class="informacion-parametros">
+                <mat-icon>info_outline</mat-icon>
+
+                <p>
+                    Al crear el período se asignarán automáticamente
+                    los parámetros académicos predeterminados.
+                    Podrás consultar su configuración desde
+                    la opción de parámetros del período.
+                </p>
+            </div>
+
+        </div>
+
+        @if (error()) {
+        <p class="mensaje-error" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            {{ error() }}
+        </p>
+        }
+
+    </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+    <button mat-button type="button" [disabled]="guardando()" (click)="cancelar()">
+        Cancelar
+    </button>
+
+    <button mat-flat-button type="submit" form="formulario-periodo" [disabled]="guardando()">
+
+        @if (guardando()) {
+        <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+        <mat-icon>save</mat-icon>
+        Guardar período
+        }
+
+    </button>
+
+</mat-dialog-actions>

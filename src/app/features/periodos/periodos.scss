@@ -1,0 +1,114 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.contenedor {
+  display: flex;
+  flex-direction: column;
+  max-width: 1500px;
+  width: 100%;
+  margin: 0 auto;
+  gap: 24px;
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+
+  p {
+    color: #777;
+    margin: 0;
+  }
+}
+
+.acciones {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tarjeta {
+  display: block;
+  width: 100%;
+  padding: 20px;
+  border-radius: 12px;
+  background: white;
+}
+
+.buscador {
+  width: 100%;
+  max-width: 450px;
+  margin-bottom: 20px;
+}
+
+.tabla-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 650px;
+}
+
+th {
+  color: #8b1538;
+  font-weight: 700;
+}
+
+td, th {
+  padding: 14px 16px;
+}
+
+.estado {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  color: #777;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.total {
+  margin-top: 20px;
+  color: #777;
+}
+
+.acciones-tabla {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  button {
+    color: #8b1538;
+  }
+}
+
+@media (max-width: 700px) {
+  .encabezado {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tarjeta {
+    padding: 12px;
+  }
+}

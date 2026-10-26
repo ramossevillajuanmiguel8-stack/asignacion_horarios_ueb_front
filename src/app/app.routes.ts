@@ -29,7 +29,26 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/docentes/docentes')
             .then(m => m.Docentes)
+      },
+      {
+        path: 'asignaturas',
+        loadComponent: () =>
+          import('./features/asignaturas/asignaturas')
+            .then(m => m.Asignaturas)
+      },
+      {
+        path: 'periodos',
+        loadComponent: () =>
+          import('./features/periodos/periodos')
+            .then(m => m.Periodos)
+      },
+      {
+        path: 'grupos',
+        loadComponent: () =>
+          import('./features/grupos/grupos')
+            .then(m => m.Grupos)
       }
+
     ]
   },
 

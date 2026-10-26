@@ -130,4 +130,20 @@ export class Docentes implements OnInit {
       )
     );
   }
+
+  async administrarCursos(docente: Docente): Promise<void> {
+
+    const { CursosHabilitados } = await import(
+      './cursos-habilitados/cursos-habilitados'
+    );
+
+    this.dialog.open(CursosHabilitados, {
+      width: '680px',
+      maxWidth: '95vw',
+      autoFocus: false,
+      disableClose: true,
+      data: docente
+    });
+  }
+
 }

@@ -1,0 +1,87 @@
+<h2 mat-dialog-title>
+  <mat-icon>settings</mat-icon>
+  Parámetros del período {{ periodo.nombre }}
+</h2>
+
+<mat-dialog-content>
+
+  <div class="detalle">
+
+    <h3>Información académica</h3>
+
+    <div class="fila">
+      <span>Fecha de inicio</span>
+      <strong>{{ periodo.fechaInicio }}</strong>
+    </div>
+
+    <div class="fila">
+      <span>Fecha de finalización</span>
+      <strong>{{ periodo.fechaFin }}</strong>
+    </div>
+
+    <h3>Franjas horarias</h3>
+
+    <div class="fila">
+      <span>Lunes a viernes</span>
+      <strong>
+        {{ periodo.horaInicioSemana }} -
+        {{ periodo.horaFinSemana }}
+      </strong>
+    </div>
+
+    <div class="fila">
+      <span>Sábado</span>
+      <strong>
+        {{ periodo.horaInicioSabado }} -
+        {{ periodo.horaFinSabado }}
+      </strong>
+    </div>
+
+    <div class="fila">
+      <span>Almuerzo</span>
+      <strong>
+        {{ periodo.almuerzoInicio }} -
+        {{ periodo.almuerzoFin }}
+      </strong>
+    </div>
+
+    <h3>Configuración de sesiones</h3>
+
+    <div class="fila">
+      <span>Duración por bloque</span>
+      <strong>{{ periodo.duracionBloqueMin }} min</strong>
+    </div>
+
+    <div class="fila">
+      <span>Máximo de sesiones semanales</span>
+      <strong>{{ periodo.maxSesionesSemana }}</strong>
+    </div>
+
+    <h3>Capacidad de grupos</h3>
+
+    <div class="fila">
+      <span>Cupo máximo base</span>
+      <strong>{{ periodo.cupoMaximoBase }}</strong>
+    </div>
+
+    <div class="fila">
+      <span>Cupo mínimo</span>
+      <strong>{{ periodo.cupoMinimo }}</strong>
+    </div>
+
+    <div class="fila">
+      <span>Tolerancia de cupo</span>
+      <strong>{{ periodo.toleranciaCupoPct }} %</strong>
+    </div>
+
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-flat-button
+    (click)="cerrar()">
+    Cerrar
+  </button>
+</mat-dialog-actions>

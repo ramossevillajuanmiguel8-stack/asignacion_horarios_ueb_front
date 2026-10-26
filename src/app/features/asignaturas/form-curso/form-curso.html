@@ -1,0 +1,112 @@
+<h2 mat-dialog-title>
+  <mat-icon>menu_book</mat-icon>
+  Nueva asignatura
+</h2>
+
+<mat-dialog-content>
+
+  <form id="formulario-curso"
+        [formGroup]="formulario"
+        (ngSubmit)="guardar()">
+
+    <div class="campos">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Código de asignatura</mat-label>
+
+        <input matInput
+               formControlName="codigo"
+               maxlength="20"
+               placeholder="Ej: MAT101">
+
+        <mat-hint>Opcional, máximo 20 caracteres.</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre de asignatura</mat-label>
+
+        <input matInput
+               formControlName="nombre"
+               maxlength="150"
+               placeholder="Ej: Cálculo diferencial">
+
+        @if (formulario.controls.nombre.hasError('required')) {
+          <mat-error>El nombre es obligatorio.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Sesiones semanales</mat-label>
+
+        <input matInput
+               type="number"
+               min="1"
+               max="10"
+               step="1"
+               formControlName="sesionesSemanales">
+
+        <mat-hint>Entre 1 y 10 sesiones.</mat-hint>
+
+        @if (formulario.controls.sesionesSemanales.invalid) {
+          <mat-error>Debe estar entre 1 y 10.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Duración por sesión (minutos)</mat-label>
+
+        <input matInput
+               type="number"
+               min="30"
+               max="240"
+               step="1"
+               formControlName="duracionSesionMin">
+
+        <mat-hint>Entre 30 y 240 minutos.</mat-hint>
+
+        @if (formulario.controls.duracionSesionMin.invalid) {
+          <mat-error>Debe estar entre 30 y 240 minutos.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-checkbox formControlName="necesitaAulaEspecial">
+        Requiere aula especial
+      </mat-checkbox>
+
+    </div>
+
+    @if (error()) {
+      <p class="mensaje-error" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ error() }}
+      </p>
+    }
+
+  </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <button mat-button
+          type="button"
+          [disabled]="guardando()"
+          (click)="cancelar()">
+    Cancelar
+  </button>
+
+  <button mat-flat-button
+          type="submit"
+          form="formulario-curso"
+          [disabled]="guardando()">
+
+    @if (guardando()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      <mat-icon>save</mat-icon>
+      Guardar asignatura
+    }
+
+  </button>
+
+</mat-dialog-actions>

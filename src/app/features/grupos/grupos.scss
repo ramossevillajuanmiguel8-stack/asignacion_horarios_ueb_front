@@ -1,0 +1,129 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.contenedor {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  gap: 24px;
+}
+
+.encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+
+  p {
+    color: #777;
+    margin: 0;
+  }
+}
+
+.acciones {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tarjeta {
+  width: 100%;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+}
+
+.filtros {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+
+  mat-form-field {
+    width: 100%;
+    max-width: 380px;
+  }
+}
+
+.tabla-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 850px;
+}
+
+th {
+  color: #8b1538;
+  font-weight: 700;
+}
+
+th, td {
+  padding: 14px 16px;
+}
+
+.etiqueta {
+  display: inline-block;
+  background: #e9f5ed;
+  color: #176b3a;
+  padding: 5px 9px;
+  border-radius: 8px;
+  font-size: 12px;
+  margin: 2px;
+}
+
+.etiqueta.advertencia {
+  background: #fff0dd;
+  color: #925400;
+}
+
+.etiqueta.especial {
+  background: #f3e6ed;
+  color: #8b1538;
+}
+
+.estado {
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 12px;
+  color: #777;
+
+  mat-icon {
+    font-size: 40px;
+    height: 40px;
+    width: 40px;
+  }
+}
+
+.total {
+  margin-top: 20px;
+  color: #777;
+}
+
+@media (max-width: 700px) {
+  .encabezado {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tarjeta {
+    padding: 12px;
+  }
+}
