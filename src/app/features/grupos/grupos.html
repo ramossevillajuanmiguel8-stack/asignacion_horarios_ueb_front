@@ -1,0 +1,187 @@
+<div class="contenedor">
+
+  <div class="encabezado">
+    <div>
+      <h1>Grupos Académicos</h1>
+      <p>Administración de grupos por período académico.</p>
+    </div>
+
+    <div class="acciones">
+      <button mat-stroked-button
+              (click)="cargarGrupos()"
+              [disabled]="periodoSeleccionado() === null">
+        <mat-icon>refresh</mat-icon>
+        Actualizar
+      </button>
+
+      <button mat-flat-button
+              (click)="nuevoGrupo()"
+              [disabled]="periodoSeleccionado() === null
+                || cargandoCatalogos()
+                || cargando()">
+        <mat-icon>group_add</mat-icon>
+        Nuevo grupo
+      </button>
+    </div>
+  </div>
+
+  <mat-card class="tarjeta">
+    <mat-card-content>
+
+      @if (cargandoCatalogos()) {
+        <div class="estado">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Cargando información académica...</p>
+        </div>
+      } @else if (error() && periodos().length === 0) {
+        <div class="estado">
+          <p>{{ error() }}</p>
+          <button mat-stroked-button
+                  (click)="cargarCatalogos()">
+            Reintentar
+          </button>
+        </div>
+      } @else if (periodos().length === 0) {
+        <div class="estado">
+          <mat-icon>event_busy</mat-icon>
+          <p>Primero debes registrar un período académico.</p>
+        </div>
+      } @else {
+
+        <div class="filtros">
+
+          <mat-form-field appearance="outline">
+            <mat-label>Período académico</mat-label>
+
+            <mat-select
+              [ngModel]="periodoSeleccionado()"
+              (ngModelChange)="seleccionarPeriodo($event)">
+
+              @for (periodo of periodos(); track periodo.id) {
+                <mat-option [value]="periodo.id">
+                  {{ periodo.nombre }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Buscar grupo</mat-label>
+            <mat-icon matPrefix>search</mat-icon>
+
+            <input
+              matInput
+              [ngModel]="filtro()"
+              (ngModelChange)="filtro.set($event)"
+              placeholder="Código, asignatura o docente">
+          </mat-form-field>
+
+        </div>
+
+        @if (cargando()) {
+          <div class="estado">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Cargando grupos...</p>
+          </div>
+        } @else if (error()) {
+          <div class="estado">
+            <p>{{ error() }}</p>
+            <button mat-stroked-button
+                    (click)="cargarGrupos()">
+              Reintentar
+            </button>
+          </div>
+        } @else {
+
+          <div class="tabla-responsive">
+            <table mat-table [dataSource]="gruposFiltrados()">
+
+              <ng-container matColumnDef="codigo">
+                <th mat-header-cell *matHeaderCellDef>
+                  Grupo
+                </th>
+                <td mat-cell *matCellDef="let grupo">
+                  {{ grupo.codigo }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="curso">
+                <th mat-header-cell *matHeaderCellDef>
+                  Asignatura
+                </th>
+                <td mat-cell *matCellDef="let grupo">
+                  {{ nombreCurso(grupo.cursoId) }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="docente">
+                <th mat-header-cell *matHeaderCellDef>
+                  Docente
+                </th>
+                <td mat-cell *matCellDef="let grupo">
+                  {{ nombreDocente(grupo.docenteId) }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="inscritos">
+                <th mat-header-cell *matHeaderCellDef>
+                  Inscritos
+                </th>
+                <td mat-cell *matCellDef="let grupo">
+                  {{ grupo.inscritos }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="limiteOperativo">
+                <th mat-header-cell *matHeaderCellDef>
+                  Límite operativo
+                </th>
+                <td mat-cell *matCellDef="let grupo">
+                  {{ grupo.limiteOperativo }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="estado">
+                <th mat-header-cell *matHeaderCellDef>
+                  Estado
+                </th>
+                <td mat-cell *matCellDef="let grupo">
+                  <span class="etiqueta"
+                        [class.advertencia]="grupo.candidatoCierre">
+                    {{ grupo.candidatoCierre
+                       ? 'Bajo cupo mínimo'
+                       : 'Dentro del mínimo' }}
+                  </span>
+
+                  @if (grupo.necesitaAulaEspecial) {
+                    <span class="etiqueta especial">
+                      Aula especial
+                    </span>
+                  }
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+              <tr mat-row
+                  *matRowDef="let row; columns: columnas">
+              </tr>
+
+            </table>
+          </div>
+
+          @if (gruposFiltrados().length === 0) {
+            <div class="estado">
+              <mat-icon>groups</mat-icon>
+              <p>No hay grupos para mostrar.</p>
+            </div>
+          }
+
+          <p class="total">
+            Total: {{ gruposFiltrados().length }} grupo(s)
+          </p>
+        }
+      }
+
+    </mat-card-content>
+  </mat-card>
+</div>

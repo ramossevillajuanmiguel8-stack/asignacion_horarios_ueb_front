@@ -1,0 +1,249 @@
+<h2 mat-dialog-title>
+  <mat-icon>settings</mat-icon>
+  Configuración de {{ periodo.nombre }}
+</h2>
+
+<mat-dialog-content>
+
+  @if (cargando()) {
+
+    <div class="estado">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando parámetros...</p>
+    </div>
+
+    @if (error()) {
+      <p class="mensaje-error" role="alert">
+        {{ error() }}
+      </p>
+
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="cargarParametros()">
+        Reintentar
+      </button>
+    }
+
+  } @else {
+
+    <form
+      id="formulario-parametros"
+      [formGroup]="formulario"
+      (ngSubmit)="guardar()">
+
+      <div class="seccion">
+
+        <h3>
+          <mat-icon>schedule</mat-icon>
+          Horarios académicos
+        </h3>
+
+        <p class="descripcion">
+          Configura las franjas de funcionamiento del período.
+        </p>
+
+        <div class="grid-campos">
+
+          <mat-form-field appearance="outline">
+            <mat-label>Inicio lunes a viernes</mat-label>
+            <input
+              matInput
+              type="time"
+              formControlName="horaInicioSemana">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fin lunes a viernes</mat-label>
+            <input
+              matInput
+              type="time"
+              formControlName="horaFinSemana">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Inicio sábado</mat-label>
+            <input
+              matInput
+              type="time"
+              formControlName="horaInicioSabado">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fin sábado</mat-label>
+            <input
+              matInput
+              type="time"
+              formControlName="horaFinSabado">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Inicio almuerzo</mat-label>
+            <input
+              matInput
+              type="time"
+              formControlName="almuerzoInicio">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fin almuerzo</mat-label>
+            <input
+              matInput
+              type="time"
+              formControlName="almuerzoFin">
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+      <div class="seccion">
+
+        <h3>
+          <mat-icon>calendar_month</mat-icon>
+          Configuración de sesiones
+        </h3>
+
+        <div class="grid-campos">
+
+          <mat-form-field appearance="outline">
+            <mat-label>Duración de bloque (minutos)</mat-label>
+
+            <input
+              matInput
+              type="number"
+              min="30"
+              max="240"
+              step="1"
+              formControlName="duracionBloqueMin">
+
+            <mat-hint>Entre 30 y 240 minutos.</mat-hint>
+
+            @if (formulario.controls.duracionBloqueMin.invalid) {
+              <mat-error>Valor entre 30 y 240.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Máximo de sesiones semanales</mat-label>
+
+            <input
+              matInput
+              type="number"
+              min="1"
+              max="10"
+              step="1"
+              formControlName="maxSesionesSemana">
+
+            <mat-hint>Entre 1 y 10 sesiones.</mat-hint>
+
+            @if (formulario.controls.maxSesionesSemana.invalid) {
+              <mat-error>Valor entre 1 y 10.</mat-error>
+            }
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+      <div class="seccion">
+
+        <h3>
+          <mat-icon>groups</mat-icon>
+          Capacidad de grupos
+        </h3>
+
+        <div class="grid-campos">
+
+          <mat-form-field appearance="outline">
+            <mat-label>Cupo máximo base</mat-label>
+
+            <input
+              matInput
+              type="number"
+              min="1"
+              max="32767"
+              step="1"
+              formControlName="cupoMaximoBase">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Cupo mínimo</mat-label>
+
+            <input
+              matInput
+              type="number"
+              min="0"
+              max="32767"
+              step="1"
+              formControlName="cupoMinimo">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Tolerancia de cupo (%)</mat-label>
+
+            <input
+              matInput
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              formControlName="toleranciaCupoPct">
+
+            <mat-hint>Entre 0 y 100 %.</mat-hint>
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+      <div class="aviso">
+        <mat-icon>info_outline</mat-icon>
+
+        <p>
+          Si existen horarios con sesiones, el sistema
+          no permitirá modificar las franjas horarias,
+          el almuerzo ni la duración de los bloques
+          sin un procedimiento de migración y revalidación.
+        </p>
+      </div>
+
+      @if (error()) {
+        <p class="mensaje-error" role="alert">
+          <mat-icon>error_outline</mat-icon>
+          {{ error() }}
+        </p>
+      }
+
+    </form>
+
+  }
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <button
+    mat-button
+    type="button"
+    [disabled]="guardando()"
+    (click)="cancelar()">
+    Cancelar
+  </button>
+
+  <button
+    mat-flat-button
+    type="submit"
+    form="formulario-parametros"
+    [disabled]="cargando() || guardando()">
+
+    @if (guardando()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      <mat-icon>save</mat-icon>
+      Guardar cambios
+    }
+
+  </button>
+
+</mat-dialog-actions>

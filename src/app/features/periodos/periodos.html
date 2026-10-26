@@ -1,0 +1,150 @@
+<div class="contenedor">
+
+    <div class="encabezado">
+        <div>
+            <h1>Períodos Académicos</h1>
+            <p>Administración del calendario académico UEB.</p>
+        </div>
+
+        <div class="acciones">
+
+            <button mat-stroked-button (click)="cargarPeriodos()">
+                <mat-icon>refresh</mat-icon>
+                Actualizar
+            </button>
+
+            <button mat-flat-button (click)="nuevoPeriodo()">
+                <mat-icon>add</mat-icon>
+                Nuevo período
+            </button>
+
+        </div>
+    </div>
+
+    <mat-card class="tarjeta">
+        <mat-card-content>
+
+            <mat-form-field appearance="outline" class="buscador">
+
+                <mat-label>Buscar período</mat-label>
+
+                <mat-icon matPrefix>search</mat-icon>
+
+                <input matInput [ngModel]="filtro()" (ngModelChange)="filtro.set($event)" placeholder="Ej: 2026-2">
+
+            </mat-form-field>
+
+            @if (cargando()) {
+
+            <div class="estado">
+                <mat-spinner diameter="40"></mat-spinner>
+                <p>Cargando períodos...</p>
+            </div>
+
+            } @else if (error()) {
+
+            <div class="estado">
+                <mat-icon>error_outline</mat-icon>
+
+                <p>{{ error() }}</p>
+
+                <button mat-stroked-button (click)="cargarPeriodos()">
+                    Reintentar
+                </button>
+            </div>
+
+            } @else {
+
+            <div class="tabla-responsive">
+
+                <table mat-table [dataSource]="periodosFiltrados()">
+
+                    <ng-container matColumnDef="nombre">
+                        <th mat-header-cell *matHeaderCellDef>
+                            Período
+                        </th>
+
+                        <td mat-cell *matCellDef="let periodo">
+                            {{ periodo.nombre }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="fechaInicio">
+                        <th mat-header-cell *matHeaderCellDef>
+                            Fecha inicio
+                        </th>
+
+                        <td mat-cell *matCellDef="let periodo">
+                            {{ periodo.fechaInicio }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="fechaFin">
+                        <th mat-header-cell *matHeaderCellDef>
+                            Fecha fin
+                        </th>
+
+                        <td mat-cell *matCellDef="let periodo">
+                            {{ periodo.fechaFin }}
+                        </td>
+                    </ng-container>
+
+
+                    <ng-container matColumnDef="acciones">
+
+                        <th mat-header-cell *matHeaderCellDef>
+                            Acciones
+                        </th>
+
+                        <td mat-cell *matCellDef="let periodo">
+
+                            <div class="acciones-tabla">
+
+                                <button mat-icon-button type="button" (click)="verParametros(periodo)"
+                                    [attr.aria-label]="
+                                  'Consultar parámetros de ' + periodo.nombre
+                                  " title="Consultar parámetros">
+
+                                    <mat-icon>visibility</mat-icon>
+                                </button>
+
+                                <button mat-icon-button type="button" (click)="editarParametros(periodo)"
+                                    [attr.aria-label]="
+                                  'Editar parámetros de ' + periodo.nombre
+                                   " title="Editar parámetros">
+
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="columnas">
+                    </tr>
+
+                    <tr mat-row *matRowDef="let row; columns: columnas">
+                    </tr>
+
+                </table>
+
+            </div>
+
+            @if (periodosFiltrados().length === 0) {
+            <div class="estado">
+                <mat-icon>event_busy</mat-icon>
+                <p>No hay períodos académicos para mostrar.</p>
+            </div>
+            }
+
+            <p class="total">
+                Total: {{ periodosFiltrados().length }} período(s)
+            </p>
+            }
+
+        </mat-card-content>
+    </mat-card>
+
+</div>

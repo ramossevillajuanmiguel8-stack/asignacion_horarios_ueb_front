@@ -1,0 +1,106 @@
+:host {
+  display: block;
+}
+
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  mat-icon {
+    color: #8b1538;
+  }
+}
+
+mat-dialog-content {
+  width: min(620px, 85vw);
+  max-height: 70vh;
+}
+
+.docente-info {
+  background: #f5f1f3;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+
+  h3 {
+    color: #8b1538;
+    margin: 0 0 8px;
+    font-size: 18px;
+  }
+
+  p {
+    color: #666;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+}
+
+.buscador {
+  width: 100%;
+}
+
+.lista-cursos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.curso-item {
+  padding: 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+
+  &:hover {
+    background: #faf5f7;
+  }
+}
+
+.curso-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  strong {
+    font-size: 14px;
+  }
+
+  span {
+    font-size: 12px;
+    color: #777;
+  }
+}
+
+.contador {
+  margin: 20px 0 0;
+  color: #777;
+  font-size: 13px;
+}
+
+.estado {
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #777;
+  text-align: center;
+}
+
+.mensaje-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+  padding: 12px;
+  background: #fde8e8;
+  color: #a11616;
+  border-radius: 8px;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+}

@@ -1,0 +1,100 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.contenedor {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  gap: 24px;
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+
+  p {
+    color: #777;
+    margin: 0;
+  }
+}
+
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tarjeta {
+  display: block;
+  width: 100%;
+  padding: 20px;
+  border-radius: 12px;
+  background: white;
+}
+
+.buscador {
+  width: 100%;
+  max-width: 450px;
+  margin-bottom: 20px;
+}
+
+.tabla-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 600px;
+}
+
+th {
+  color: #8b1538;
+  font-weight: 700;
+}
+
+td,
+th {
+  padding: 14px 16px;
+}
+
+.estado {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #777;
+  text-align: center;
+}
+
+.total {
+  margin-top: 20px;
+  color: #777;
+}
+
+@media (max-width: 700px) {
+  .encabezado {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tarjeta {
+    padding: 12px;
+  }
+}
