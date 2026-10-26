@@ -47,6 +47,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/grupos/grupos')
             .then(m => m.Grupos)
+      },
+      {
+        path: 'horarios',
+        loadComponent: () =>
+          import('./features/horarios/horarios')
+            .then(m => m.Horarios)
       }
 
     ]

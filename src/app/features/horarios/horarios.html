@@ -1,0 +1,389 @@
+<div class="contenedor">
+
+    <div class="encabezado">
+        <div>
+            <h1>Gestión de Horarios</h1>
+            <p>Generación y consulta de horarios académicos.</p>
+        </div>
+
+        <button mat-stroked-button (click)="cargarPeriodos()" [disabled]="cargando() || generando()">
+
+            <mat-icon>refresh</mat-icon>
+            Actualizar
+        </button>
+    </div>
+
+    <mat-card class="tarjeta">
+        <mat-card-content>
+
+            <div class="controles">
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Período académico</mat-label>
+
+                    <mat-select [value]="periodoSeleccionado()" [disabled]="cargando() || generando()"
+                        (valueChange)="seleccionarPeriodo($event)">
+
+                        @for (periodo of periodos(); track periodo.id) {
+                        <mat-option [value]="periodo.id">
+                            {{ periodo.nombre }}
+                        </mat-option>
+                        }
+
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Horario</mat-label>
+
+                    <mat-select [value]="horarioSeleccionado()?.id"
+                        [disabled]="cargando() || generando() || historial().length === 0"
+                        (valueChange)="seleccionarHorario($event)">
+
+                        @for (horario of historial(); track horario.id) {
+                        <mat-option [value]="horario.id">
+                            Horario #{{ horario.id }}
+                            — {{ horario.estado }}
+                        </mat-option>
+                        }
+
+                    </mat-select>
+                </mat-form-field>
+
+                <button mat-flat-button class="generar" (click)="confirmarGeneracion()" [disabled]="
+            periodoSeleccionado() === null ||
+            cargando() ||
+            generando()
+          ">
+
+                    @if (generando()) {
+                    <mat-spinner diameter="20"></mat-spinner>
+                    Generando...
+                    } @else {
+                    <mat-icon>auto_awesome</mat-icon>
+                    Generar horario
+                    }
+                </button>
+
+            </div>
+
+            @if (cargando()) {
+            <div class="estado">
+                <mat-spinner diameter="40"></mat-spinner>
+                <p>Cargando horarios...</p>
+            </div>
+            }
+
+            @if (error()) {
+            <div class="mensaje-error" role="alert">
+                <mat-icon>error_outline</mat-icon>
+                <span>{{ error() }}</span>
+            </div>
+            }
+
+            @if (!cargando() && periodos().length === 0 && !error()) {
+            <div class="estado">
+                <mat-icon>event_busy</mat-icon>
+                <p>No hay períodos académicos registrados.</p>
+            </div>
+            }
+
+            @if (resultadoGeneracion(); as resultado) {
+
+            <div class="resultado">
+
+                <h2>Resultado de la generación</h2>
+
+                <div class="estadisticas">
+                    <div class="estadistica">
+                        <strong>{{ resultado.sesionesGeneradas }}</strong>
+                        <span>Sesiones generadas</span>
+                    </div>
+
+                    <div class="estadistica">
+                        <strong>{{ resultado.noUbicadas.length }}</strong>
+                        <span>Grupos con pendientes</span>
+                    </div>
+
+                    <div class="estadistica">
+                        <strong>{{ resultado.advertencias.length }}</strong>
+                        <span>Advertencias</span>
+                    </div>
+                </div>
+
+                @if (resultado.noUbicadas.length > 0) {
+                <div class="pendientes">
+                    <h3>Sesiones sin ubicar</h3>
+
+                    @for (item of resultado.noUbicadas; track $index) {
+                    <div class="pendiente-item">
+                        <strong>{{ item.curso }}</strong>
+
+                        <span>
+                            Grupo #{{ item.grupoId }}
+                            — {{ item.faltantes }} sesión(es) pendiente(s)
+                        </span>
+
+                        <p>{{ item.motivo }}</p>
+                    </div>
+                    }
+                </div>
+                }
+
+                @if (resultado.advertencias.length > 0) {
+                <div class="pendientes">
+                    <h3>Advertencias</h3>
+
+                    @for (aviso of resultado.advertencias; track $index) {
+                    <div class="pendiente-item">
+                        <strong>{{ aviso.nivel }} — {{ aviso.codigo }}</strong>
+                        <p>{{ aviso.motivo }}</p>
+                    </div>
+                    }
+                </div>
+                }
+
+            </div>
+
+            }
+
+            @if (!cargando() && horarioSeleccionado(); as horario) {
+
+            <div class="detalle-horario">
+
+
+
+                <div class="titulo-horario">
+                    <div>
+                        <h2>Horario #{{ horario.id }}</h2>
+
+                        <p>
+                            Creado:
+                            {{ horario.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+                        </p>
+                    </div>
+
+                    <span class="etiqueta" [class.publicado]="horario.estado === 'PUBLICADO'">
+
+                        {{ horario.estado }}
+                    </span>
+                </div>
+
+                <section class="seccion-validacion">
+
+                    <div class="validacion-encabezado">
+
+                        <div>
+                            <h3>Validación académica</h3>
+                            <p>
+                                Comprueba las restricciones y conflictos
+                                antes de publicar el horario.
+                            </p>
+                        </div>
+
+                        <button mat-stroked-button type="button" [disabled]="validando() || generando() || cargando()"
+                            (click)="validarHorario()">
+
+                            @if (validando()) {
+                            <mat-spinner diameter="20"></mat-spinner>
+                            } @else {
+                            <mat-icon>fact_check</mat-icon>
+                            }
+
+                            {{ validando() ? 'Validando...' : 'Validar horario' }}
+
+                        </button>
+
+                    </div>
+
+                    @if (errorValidacion()) {
+
+                    <div class="mensaje-error" role="alert">
+                        <mat-icon>error_outline</mat-icon>
+                        {{ errorValidacion() }}
+                    </div>
+
+                    }
+
+                    @if (resultadoValidacion(); as resultado) {
+
+                    <div class="resultado-validacion">
+
+                        <h4>Respuesta de validación</h4>
+
+                        <p>
+                            El backend respondió correctamente.
+                            Vamos a verificar su estructura antes
+                            de mostrar los conflictos individualmente.
+                        </p>
+
+                        <pre>{{ resultado | json }}</pre>
+
+                    </div>
+
+                    }
+
+                </section>
+
+                <div class="resumen">
+                    <div>
+                        <strong>{{ horario.sesiones.length }}</strong>
+                        <span>Sesiones asignadas</span>
+                    </div>
+
+                    <div>
+                        <strong>{{ historial().length }}</strong>
+                        <span>Horarios en el historial</span>
+                    </div>
+                </div>
+
+                <h3>Sesiones académicas</h3>
+                <section class="calendario-semanal">
+
+                    <div class="calendario-encabezado">
+                        <div>
+                            <h3>Calendario semanal</h3>
+
+                            <p>
+                                Distribución de las sesiones académicas
+                                de lunes a sábado.
+                            </p>
+                        </div>
+
+                        <mat-icon>calendar_month</mat-icon>
+                    </div>
+
+                    <div class="calendario-grid">
+
+                        @for (dia of sesionesPorDia(); track dia.numero) {
+
+                        <div class="columna-dia">
+
+                            <div class="dia-encabezado">
+                                {{ dia.nombre }}
+                            </div>
+
+                            <div class="dia-contenido">
+
+                                @for (sesion of dia.sesiones; track sesion.id) {
+
+                                <div class="bloque-clase" [class.aula-especial]="
+                sesion.necesitaAulaEspecial
+              ">
+
+                                    <div class="hora-clase">
+                                        <mat-icon>schedule</mat-icon>
+
+                                        {{ formatHora(sesion.horaInicio) }}
+                                        -
+                                        {{ formatHora(sesion.horaFin) }}
+                                    </div>
+
+                                    <strong class="nombre-curso">
+                                        {{ sesion.curso }}
+                                    </strong>
+
+                                    <div class="dato-clase">
+                                        <mat-icon>groups</mat-icon>
+                                        <span>{{ sesion.grupo }}</span>
+                                    </div>
+
+                                    <div class="dato-clase">
+                                        <mat-icon>person</mat-icon>
+                                        <span>{{ sesion.docente }}</span>
+                                    </div>
+
+                                    @if (sesion.necesitaAulaEspecial) {
+
+                                    <div class="indicador-especial">
+                                        <mat-icon>science</mat-icon>
+                                        Aula especial requerida
+                                    </div>
+
+                                    }
+
+                                </div>
+
+                                } @empty {
+
+                                <div class="dia-vacio">
+                                    Sin clases
+                                </div>
+
+                                }
+
+                            </div>
+
+                        </div>
+
+                        }
+
+                    </div>
+
+                </section>
+
+                <div class="tabla-responsive">
+                    <table class="tabla-sesiones">
+
+                        <thead>
+                            <tr>
+                                <th>Día</th>
+                                <th>Hora</th>
+                                <th>Grupo</th>
+                                <th>Asignatura</th>
+                                <th>Docente</th>
+                                <th>Aula especial</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @for (sesion of sesionesOrdenadas(); track sesion.id) {
+                            <tr>
+                                <td>{{ nombreDia(sesion.dia) }}</td>
+
+                                <td>
+                                    {{ formatHora(sesion.horaInicio) }}
+                                    –
+                                    {{ formatHora(sesion.horaFin) }}
+                                </td>
+
+                                <td>{{ sesion.grupo }}</td>
+                                <td>{{ sesion.curso }}</td>
+                                <td>{{ sesion.docente }}</td>
+
+                                <td>
+                                    {{ sesion.necesitaAulaEspecial ? 'Sí' : 'No' }}
+                                </td>
+                            </tr>
+                            } @empty {
+                            <tr>
+                                <td colspan="6" class="sin-datos">
+                                    Este horario no tiene sesiones asignadas.
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
+
+            } @else if (
+            !cargando() &&
+            periodoSeleccionado() !== null &&
+            historial().length === 0 &&
+            !error()
+            ) {
+
+            <div class="estado">
+                <mat-icon>calendar_month</mat-icon>
+                <p>Este período aún no tiene horarios generados.</p>
+            </div>
+
+            }
+
+        </mat-card-content>
+    </mat-card>
+
+</div>

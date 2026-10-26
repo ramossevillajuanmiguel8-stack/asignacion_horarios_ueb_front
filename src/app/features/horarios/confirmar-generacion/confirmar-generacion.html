@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>
+  <mat-icon>auto_awesome</mat-icon>
+  Generar horario académico
+</h2>
+
+<mat-dialog-content>
+
+  <p>
+    El sistema intentará asignar automáticamente las sesiones
+    de los grupos registrados en este período.
+  </p>
+
+  @if (datos.tieneHorarios) {
+    <div class="aviso">
+      <mat-icon>info_outline</mat-icon>
+      <p>
+        Este período ya tiene horarios. Se creará un
+        <strong>nuevo borrador</strong> y los horarios
+        anteriores permanecerán en el historial.
+      </p>
+    </div>
+  }
+
+  <p>
+    El resultado puede incluir sesiones sin ubicar
+    o advertencias que será necesario revisar.
+  </p>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">
+    Cancelar
+  </button>
+
+  <button mat-flat-button (click)="confirmar()">
+    <mat-icon>play_arrow</mat-icon>
+    Generar
+  </button>
+</mat-dialog-actions>

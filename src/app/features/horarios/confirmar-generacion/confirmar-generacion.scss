@@ -1,0 +1,32 @@
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  mat-icon {
+    color: #8b1538;
+  }
+}
+
+mat-dialog-content {
+  line-height: 1.6;
+}
+
+.aviso {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: #f5f1f3;
+  border-radius: 10px;
+  padding: 14px;
+  margin: 16px 0;
+
+  mat-icon {
+    color: #8b1538;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
