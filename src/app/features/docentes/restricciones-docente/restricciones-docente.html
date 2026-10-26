@@ -1,0 +1,120 @@
+<h2 mat-dialog-title>
+  <mat-icon>event_note</mat-icon>
+  Restricciones horarias
+</h2>
+
+<mat-dialog-content>
+
+  <div class="informacion-docente">
+    <h3>{{ docente.nombre }}</h3>
+
+    <p>
+      Vinculación:
+      <strong>{{ docente.tipoVinculacion }}</strong>
+    </p>
+
+    <p>
+      Especialidades:
+      {{ docente.especialidades.join(', ') || 'Sin registrar' }}
+    </p>
+  </div>
+
+  @if (cargando()) {
+
+    <div class="estado">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando restricciones...</p>
+    </div>
+
+  } @else if (error()) {
+
+    <div class="estado">
+      <mat-icon class="icono-error">error_outline</mat-icon>
+
+      <p>{{ error() }}</p>
+
+      <button
+        mat-stroked-button
+        (click)="cargarRestricciones()">
+        Reintentar
+      </button>
+    </div>
+
+  } @else if (restricciones().length === 0) {
+
+    <div class="estado">
+      <mat-icon>event_available</mat-icon>
+
+      <h3>Sin restricciones registradas</h3>
+
+      <p>
+        Este docente no tiene restricciones horarias
+        registradas en el sistema.
+      </p>
+    </div>
+
+  } @else {
+
+    <div class="lista-restricciones">
+
+      @for (restriccion of restricciones(); track restriccion.id ?? $index) {
+
+        <mat-card class="restriccion-card">
+
+          <mat-card-content>
+
+            <div class="restriccion-header">
+
+              <div>
+                <h3>
+                  {{ nombreDia(restriccion.dia) }}
+                </h3>
+
+                <p>
+                  {{ restriccion.horaInicio }}
+                  -
+                  {{ restriccion.horaFin }}
+                </p>
+              </div>
+
+              <span
+                class="estado-restriccion"
+                [class.no-disponible]="
+                  restriccion.sentido === 'NO_DISPONIBLE'
+                "
+                [class.disponible]="
+                  restriccion.sentido === 'DISPONIBLE'
+                ">
+
+                {{ nombreSentido(restriccion.sentido) }}
+
+              </span>
+
+            </div>
+
+            <div class="tipo">
+              <mat-icon>info_outline</mat-icon>
+              {{ nombreTipo(restriccion.tipo) }}
+            </div>
+
+          </mat-card-content>
+
+        </mat-card>
+
+      }
+
+    </div>
+
+  }
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <button
+    mat-stroked-button
+    (click)="cerrar()">
+    Cerrar
+  </button>
+
+</mat-dialog-actions>

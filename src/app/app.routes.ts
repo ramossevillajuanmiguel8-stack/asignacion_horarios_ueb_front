@@ -23,6 +23,12 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: Dashboard
+      },
+      {
+        path: 'docentes',
+        loadComponent: () =>
+          import('./features/docentes/docentes')
+            .then(m => m.Docentes)
       }
     ]
   },

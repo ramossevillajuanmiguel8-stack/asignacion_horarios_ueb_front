@@ -1,0 +1,185 @@
+<h2 mat-dialog-title>
+  <mat-icon>person_add</mat-icon>
+  Registrar nuevo docente
+</h2>
+
+<mat-dialog-content>
+
+  <form [formGroup]="formulario" id="formulario-docente"
+        (ngSubmit)="guardar()">
+
+    <div class="campos">
+
+      <mat-form-field appearance="outline" class="ancho-completo">
+        <mat-label>Nombre completo</mat-label>
+        <input
+          matInput
+          formControlName="nombre"
+          placeholder="Ej: María Rodríguez"
+          maxlength="150">
+
+        @if (formulario.controls.nombre.hasError('required')) {
+          <mat-error>El nombre es obligatorio.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="ancho-completo">
+        <mat-label>Tipo de vinculación</mat-label>
+
+        <mat-select formControlName="tipoVinculacion">
+          @for (v of vinculaciones; track v.valor) {
+            <mat-option [value]="v.valor">
+              {{ v.nombre }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="ancho-completo">
+        <mat-label>Especialidades</mat-label>
+
+        <input
+          matInput
+          formControlName="especialidades"
+          placeholder="Matemáticas, Física, Programación">
+
+        <mat-hint>Separa las especialidades con comas.</mat-hint>
+      </mat-form-field>
+
+      <div class="seccion-restricciones">
+
+        <h3>Disponibilidad y restricciones</h3>
+
+        <mat-checkbox
+          formControlName="sinRestricciones"
+          (change)="cambiarSinRestricciones($event.checked)">
+          El docente no tiene restricciones horarias
+        </mat-checkbox>
+
+        @if (!formulario.controls.sinRestricciones.value) {
+
+          <div formArrayName="restricciones">
+
+            @for (r of restricciones.controls; track r) {
+
+              <div class="restriccion" [formGroupName]="$index">
+
+                <div class="restriccion-encabezado">
+                  <strong>Restricción {{ $index + 1 }}</strong>
+
+                  <button
+                    mat-icon-button
+                    type="button"
+                    aria-label="Eliminar restricción"
+                    (click)="eliminarRestriccion($index)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+
+                <div class="grid-restriccion">
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Día</mat-label>
+                    <mat-select formControlName="dia">
+                      @for (dia of dias; track dia.valor) {
+                        <mat-option [value]="dia.valor">
+                          {{ dia.nombre }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Hora inicio</mat-label>
+                    <input
+                      matInput
+                      type="time"
+                      formControlName="horaInicio">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Hora fin</mat-label>
+                    <input
+                      matInput
+                      type="time"
+                      formControlName="horaFin">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Tipo</mat-label>
+                    <mat-select formControlName="tipo">
+                      @for (tipo of tipos; track tipo.valor) {
+                        <mat-option [value]="tipo.valor">
+                          {{ tipo.nombre }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Sentido</mat-label>
+                    <mat-select formControlName="sentido">
+                      @for (sentido of sentidos; track sentido.valor) {
+                        <mat-option [value]="sentido.valor">
+                          {{ sentido.nombre }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+
+                </div>
+              </div>
+            }
+
+          </div>
+
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="agregarRestriccion()">
+
+            <mat-icon>add</mat-icon>
+            Agregar restricción
+          </button>
+        }
+      </div>
+
+    </div>
+
+    @if (error()) {
+      <p class="mensaje-error" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ error() }}
+      </p>
+    }
+
+  </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <button
+    mat-button
+    type="button"
+    [disabled]="guardando()"
+    (click)="cancelar()">
+    Cancelar
+  </button>
+
+  <button
+    mat-flat-button
+    type="submit"
+    form="formulario-docente"
+    [disabled]="guardando()">
+
+    @if (guardando()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      <mat-icon>save</mat-icon>
+      Guardar docente
+    }
+
+  </button>
+
+</mat-dialog-actions>
