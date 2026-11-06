@@ -1,0 +1,68 @@
+<div class="pagina-publica">
+  <header>
+    <div>
+      <h1>Horarios académicos publicados</h1>
+      <p>Universidad El Bosque · Consulta estudiantil por asignatura (HU08)</p>
+    </div>
+    <a mat-stroked-button routerLink="/login"><mat-icon>arrow_back</mat-icon> Volver</a>
+  </header>
+
+  <mat-card>
+    <mat-card-content>
+      <p class="aviso">Consulta de solo lectura. No incluye borradores ni permite editar sesiones.</p>
+      <div class="filtros">
+        <mat-form-field appearance="outline">
+          <mat-label>Período académico</mat-label>
+          <mat-select [value]="periodoId()" [disabled]="cargandoCatalogos() || consultando()"
+                      (valueChange)="cambiarPeriodo($event)">
+            @for (p of periodos(); track p.id) {
+              <mat-option [value]="p.id">{{ p.nombre }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Asignatura</mat-label>
+          <mat-select [value]="cursoId()" [disabled]="cargandoCatalogos() || consultando()"
+                      (valueChange)="cambiarCurso($event)">
+            @for (c of cursos(); track c.id) {
+              <mat-option [value]="c.id">{{ c.codigo || '' }} {{ c.nombre }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <button mat-flat-button type="button"
+                [disabled]="periodoId() === null || cursoId() === null || consultando() || cargandoCatalogos()"
+                (click)="consultar()">
+          <mat-icon>search</mat-icon> Consultar
+        </button>
+      </div>
+
+      @if (cargandoCatalogos() || consultando()) {
+        <div class="cargando"><mat-spinner diameter="28"></mat-spinner> Consultando...</div>
+      }
+      @if (error()) {
+        <p class="error" role="alert">{{ error() }}</p>
+      }
+      @if (consultaRealizada()) {
+        <h2>Sesiones publicadas de la asignatura</h2>
+        <div class="tabla">
+          <table>
+            <thead><tr><th>Día</th><th>Inicio</th><th>Fin</th><th>Grupo</th><th>Docente</th></tr></thead>
+            <tbody>
+              @for (s of sesiones(); track s.id) {
+                <tr>
+                  <td>{{ nombreDia(s.dia) }}</td>
+                  <td>{{ s.horaInicio.slice(0, 5) }}</td>
+                  <td>{{ s.horaFin.slice(0, 5) }}</td>
+                  <td>{{ s.grupo }}</td>
+                  <td>{{ s.docente }}</td>
+                </tr>
+              } @empty {
+                <tr><td colspan="5">No hay sesiones publicadas para esta asignatura.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
