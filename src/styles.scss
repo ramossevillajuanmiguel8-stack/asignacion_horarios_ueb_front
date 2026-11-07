@@ -1,49 +1,115 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
+// Tema institucional UEB: verde petróleo, verdes hoja y acento naranja.
+// Conserva el sistema de temas Material 3 y sus variables.
 @use '@angular/material' as mat;
+
+:root {
+  // Identidad visual de la captura de referencia.
+  --ueb-primary: #004040;
+  --ueb-primary-hover: #075953;
+  --ueb-primary-active: #087565;
+  --ueb-green: #009d71;
+  --ueb-lime: #65d83d;
+  --ueb-orange: #f08013;
+
+  // Superficies y tipografía para los módulos académicos.
+  --ueb-background: #f3f8f6;
+  --ueb-surface: #ffffff;
+  --ueb-soft: #e8f4ef;
+  --ueb-text: #173b37;
+  --ueb-text-secondary: #617b75;
+  --ueb-border: #d7e5df;
+
+  // Estados funcionales; no usar verde para indicar errores.
+  --ueb-success: #168454;
+  --ueb-warning: #a95e06;
+  --ueb-error: #b42318;
+}
 
 html {
   height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$rose-palette,
-        tertiary: mat.$red-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
-}
-
-body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light;
 
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
+  @include mat.theme((
+    color: (
+      primary: mat.$green-palette,
+      tertiary: mat.$orange-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
 
-  // Reset the user agent margin.
-  margin: 0;
-  height: 100%;
+  // Ajusta los tokens Material 3 a la identidad de la UEB.
+  // Así botones, inputs, selectores y cuadros de diálogo usan la nueva paleta.
+  @include mat.theme-overrides((
+    primary: #00695a,
+    on-primary: #ffffff,
+    primary-container: #d5f2e8,
+    on-primary-container: #003e36,
+    secondary: #006c5b,
+    on-secondary: #ffffff,
+    secondary-container: #d9eee6,
+    on-secondary-container: #173b37,
+    tertiary: #985607,
+    on-tertiary: #ffffff,
+    tertiary-container: #ffe2c2,
+    on-tertiary-container: #3d2400,
+    surface: #ffffff,
+    on-surface: #173b37,
+    surface-container-low: #f6faf8,
+    surface-container: #edf5f1,
+    outline: #76958a,
+    outline-variant: #d7e5df,
+  ));
 }
-/* You can add global styles to this file, and also import other style files */
-html, body {
+
+html,
+body {
   margin: 0;
   width: 100%;
   min-height: 100%;
   font-family: Roboto, Arial, sans-serif;
 }
 
+body {
+  background-color: var(--ueb-background);
+  color: var(--ueb-text);
+  font: var(--mat-sys-body-medium);
+}
+
 * {
   box-sizing: border-box;
+}
+
+/* Corrección de contraste: los elementos internos de MatList
+   pueden tener colores definidos en componentes de Angular Material. */
+.sidebar .mat-mdc-list-item .mdc-list-item__primary-text,
+.sidebar .mat-mdc-list-item [matListItemTitle],
+.sidebar .mat-mdc-list-item .mat-mdc-list-item-title {
+  color: #edf8f4 !important;
+}
+
+.sidebar .mat-mdc-list-item mat-icon,
+.sidebar .mat-mdc-list-item .mat-icon {
+  color: #daf0e7 !important;
+}
+
+.sidebar .mat-mdc-list-item:hover .mdc-list-item__primary-text,
+.sidebar .mat-mdc-list-item:hover [matListItemTitle],
+.sidebar .mat-mdc-list-item.activo .mdc-list-item__primary-text,
+.sidebar .mat-mdc-list-item.activo [matListItemTitle] {
+  color: #ffffff !important;
+}
+
+.sidebar .mat-mdc-list-item.activo mat-icon,
+.sidebar .mat-mdc-list-item.activo .mat-icon {
+  color: #ffffff !important;
+}
+
+/* Únicamente iconos de tarjetas del Dashboard.
+   Evita modificar iconos de alerta o error del resto de módulos. */
+app-dashboard .mat-mdc-card mat-icon,
+app-dashboard .stat-card mat-icon,
+app-dashboard .stats-card mat-icon,
+app-dashboard .mat-mdc-card .mat-icon {
+  color: var(--ueb-green, #009d71) !important;
 }
