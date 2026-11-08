@@ -1,5 +1,5 @@
 /* Login institucional: verde petróleo + acentos hoja y naranja.
-   Mantiene intactos el HTML y la lógica de autenticación. */
+   Acceso institucional mediante Spring Security. */
 .login-container {
   position: relative;
   isolation: isolate;
@@ -117,24 +117,12 @@
   font-size: 13px;
 }
 
-.vista-previa {
-  border-top: 1px solid var(--ueb-border, #d7e5df);
-  margin-top: 24px;
-  padding-top: 20px;
-
-  h3 {
-    margin: 0 0 8px;
-    font-size: 16px;
-    color: var(--ueb-primary, #004040);
-  }
-
-  p {
-    margin: 0 0 14px;
-    font-size: 12px;
-    color: var(--ueb-text-secondary, #617b75);
-  }
-}
-
+ .subtitulo { line-height: 1.5; margin-top: 8px; }
+.leyenda-seguridad { display:flex; align-items:center; justify-content:center; gap:7px;
+  margin-top:22px; padding-top:18px; border-top:1px solid #d7e5df;
+  color:#526c66; font-size:12px; text-align:center; }
+.leyenda-seguridad mat-icon {font-size:18px;width:18px;height:18px;color:#087565}
+.mensaje.error { color:#9b2020; background:#fff1f0; border-radius:6px; padding:10px; }
 .enlace-estudiante {
   display: block;
   text-align: center;

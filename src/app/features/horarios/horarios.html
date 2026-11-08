@@ -170,59 +170,61 @@
                 </div>
 
                 <section class="seccion-validacion">
-
-                    <div class="validacion-encabezado">
-
-                        <div>
-                            <h3>Validación académica</h3>
-                            <p>
-                                Comprueba las restricciones y conflictos
-                                antes de publicar el horario.
-                            </p>
-                        </div>
-
-                        <button mat-stroked-button type="button" [disabled]="validando() || generando() || cargando()"
-                            (click)="validarHorario()">
-
-                            @if (validando()) {
-                            <mat-spinner diameter="20"></mat-spinner>
-                            } @else {
-                            <mat-icon>fact_check</mat-icon>
-                            }
-
-                            {{ validando() ? 'Validando...' : 'Validar horario' }}
-
-                        </button>
-
+                  <div class="validacion-encabezado">
+                    <div>
+                      <h3>Previsualización y movimiento de sesiones</h3>
+                      <p>El servidor verifica las restricciones antes de aplicar cambios.</p>
                     </div>
-
-                    @if (errorValidacion()) {
-
-                    <div class="mensaje-error" role="alert">
-                        <mat-icon>error_outline</mat-icon>
-                        {{ errorValidacion() }}
+                  </div>
+                  @if (horario.estado === 'BORRADOR') {
+                    <div class="controles movimiento-controles">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Sesión</mat-label>
+                        <mat-select [value]="sesionMoverId()" (valueChange)="seleccionarSesionMover($event)">
+                          @for (sesion of horario.sesiones; track sesion.id) {
+                            <mat-option [value]="sesion.id">#{{ sesion.id }} · {{ sesion.grupo }} · {{ sesion.curso }}</mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                      <mat-form-field appearance="outline">
+                        <mat-label>Día propuesto</mat-label>
+                        <mat-select [value]="diaMover()" (valueChange)="cambiarDiaMover($event)">
+                          @for (dia of diasSemana; track dia.numero) {
+                            <mat-option [value]="dia.numero">{{ dia.nombre }}</mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                      <mat-form-field appearance="outline">
+                        <mat-label>Hora de inicio</mat-label>
+                        <input matInput type="time" [value]="horaMover()"
+                               (input)="cambiarHoraMover($any($event.target).value)" />
+                      </mat-form-field>
+                      <button mat-stroked-button type="button"
+                              [disabled]="sesionMoverId() === null || validando() || moviendo() || generando()"
+                              (click)="validarHorario()">
+                        <mat-icon>fact_check</mat-icon> Previsualizar
+                      </button>
+                      <button mat-flat-button type="button"
+                              [disabled]="moviendo() || validando() || resultadoValidacion()?.permitido !== true ||
+                                ultimaPropuesta() === null"
+                              (click)="moverSesion()">
+                        <mat-icon>swap_horiz</mat-icon> {{ moviendo() ? 'Moviendo...' : 'Aplicar movimiento' }}
+                      </button>
                     </div>
-
-                    }
-
-                    @if (resultadoValidacion(); as resultado) {
-
+                  } @else {
+                    <p>Este horario está publicado: sus sesiones son de solo lectura.</p>
+                  }
+                  @if (errorValidacion()) {
+                    <div class="mensaje-error" role="alert"><mat-icon>error_outline</mat-icon>{{ errorValidacion() }}</div>
+                  }
+                  @if (resultadoValidacion(); as resultado) {
                     <div class="resultado-validacion">
-
-                        <h4>Respuesta de validación</h4>
-
-                        <p>
-                            El backend respondió correctamente.
-                            Vamos a verificar su estructura antes
-                            de mostrar los conflictos individualmente.
-                        </p>
-
-                        <pre>{{ resultado | json }}</pre>
-
+                      <h4>{{ resultado.permitido ? 'Movimiento permitido' : 'Movimiento no permitido' }}</h4>
+                      @for (incidencia of resultado.incidencias; track $index) {
+                        <p><strong>{{ incidencia.codigo }}</strong> · {{ incidencia.motivo }}</p>
+                      } @empty { <p>No se encontraron incidencias.</p> }
                     </div>
-
-                    }
-
+                  }
                 </section>
 
                 <div class="resumen">

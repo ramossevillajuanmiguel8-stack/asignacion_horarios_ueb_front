@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 import { MainLayout } from './layout/main-layout/main-layout';
 import { Dashboard } from './features/dashboard/dashboard';
 import { Login } from './features/auth/login/login';
-import { perfilGuard, vistaPreviaGuard } from './core/perfiles/perfil.guard';
+import { perfilGuard, sesionGuard } from './core/perfiles/perfil.guard';
 
 const OPERADORES = ['COMITE_TACTICO', 'COORDINACION_ACADEMICA'] as const;
 
@@ -17,7 +17,7 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayout,
-    canActivate: [vistaPreviaGuard],
+    canActivateChild: [sesionGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       { path: 'dashboard', component: Dashboard, canActivate: [perfilGuard], data: { roles: OPERADORES } },

@@ -15,3 +15,6 @@ h2{color:#8b1538;font-size:20px}
 th,td{text-align:left;padding:14px;border-bottom:1px solid #ececec}
 th{color:#8b1538;background:#fcf4f7}
 @media(max-width:600px){.filtros mat-form-field,.filtros button{width:100%;min-width:0}}
+
+.ayuda-periodo{color:#64736f;font-size:12px;margin:8px 0 18px}
+.resultado-encabezado{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}

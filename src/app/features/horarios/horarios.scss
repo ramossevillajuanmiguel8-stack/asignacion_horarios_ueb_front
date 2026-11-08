@@ -479,3 +479,6 @@
     overflow-wrap: anywhere;
   }
 }
+.movimiento-controles{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:18px}
+.movimiento-controles mat-form-field{min-width:155px;flex:1}
+.movimiento-controles button{margin-bottom:16px}

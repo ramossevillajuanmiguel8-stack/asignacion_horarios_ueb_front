@@ -20,20 +20,23 @@ import { PeriodoAcademico } from '../../models/periodo.model';
 
 import {
   Horario,
-  ResultadoGeneracion
+  ResultadoGeneracion,
+  ValidacionMovimiento
 } from '../../models/horario.model';
 
 import { PeriodosService } from '../../services/periodos';
 import { HorariosService } from '../../services/horarios';
 
 import { finalize } from 'rxjs';
-import { DatePipe, JsonPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { MatInputModule } from '@angular/material/input';
+import { HttpErrorResponse } from '@angular/common/http';
 @Component({
   selector: 'app-horarios',
   standalone: true,
   imports: [
     DatePipe,
-    JsonPipe,
+    MatInputModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -65,7 +68,12 @@ export class Horarios implements OnInit {
 
   validando = signal(false);
 
-  resultadoValidacion = signal<unknown | null>(null);
+  resultadoValidacion = signal<ValidacionMovimiento | null>(null);
+  sesionMoverId = signal<number | null>(null);
+  diaMover = signal<number>(1);
+  horaMover = signal<string>('07:00');
+  ultimaPropuesta = signal<string | null>(null);
+  moviendo = signal(false);
 
   errorValidacion = signal('');
 
@@ -145,8 +153,7 @@ export class Horarios implements OnInit {
   }
 
   seleccionarPeriodo(periodoId: number): void {
-    this.resultadoValidacion.set(null);
-    this.errorValidacion.set('');
+    this.limpiarMovimiento();
 
     this.periodoSeleccionado.set(periodoId);
     this.horarioSeleccionado.set(null);
@@ -179,6 +186,7 @@ export class Horarios implements OnInit {
           null;
 
         this.horarioSeleccionado.set(seleccionado);
+        this.limpiarMovimiento();
         this.cargando.set(false);
       },
 
@@ -200,8 +208,7 @@ export class Horarios implements OnInit {
     if (horario) {
       this.horarioSeleccionado.set(horario);
       this.resultadoGeneracion.set(null);
-      this.resultadoValidacion.set(null);
-      this.errorValidacion.set('');
+      this.limpiarMovimiento();
     }
   }
 
@@ -281,47 +288,106 @@ export class Horarios implements OnInit {
   formatHora(hora: string): string {
     return hora.substring(0, 5);
   }
-  validarHorario(): void {
-
-    const horario = this.horarioSeleccionado();
-
-    if (!horario || this.validando() || this.generando()) {
-      return;
-    }
-
-    this.validando.set(true);
+  limpiarMovimiento(): void {
+    this.sesionMoverId.set(null);
     this.resultadoValidacion.set(null);
     this.errorValidacion.set('');
+    this.ultimaPropuesta.set(null);
+  }
 
-    this.horariosService.validar(horario.id)
-      .pipe(
-        finalize(() => this.validando.set(false))
-      )
+  seleccionarSesionMover(id: number): void {
+    const sesion = this.horarioSeleccionado()?.sesiones.find(s => s.id === id);
+    this.sesionMoverId.set(sesion?.id ?? null);
+    this.diaMover.set(sesion?.dia ?? 1);
+    this.horaMover.set(sesion?.horaInicio.slice(0,5) ?? '07:00');
+    this.resultadoValidacion.set(null);
+    this.ultimaPropuesta.set(null);
+    this.errorValidacion.set('');
+  }
+
+  cambiarDiaMover(dia: number): void {
+    this.diaMover.set(dia);
+    this.resultadoValidacion.set(null);
+    this.ultimaPropuesta.set(null);
+  }
+
+  cambiarHoraMover(hora: string): void {
+    this.horaMover.set(hora);
+    this.resultadoValidacion.set(null);
+    this.ultimaPropuesta.set(null);
+  }
+
+  private prepararMovimiento() {
+    const horario = this.horarioSeleccionado();
+    const sesionId = this.sesionMoverId();
+    const sesion = horario?.sesiones.find(s => s.id === sesionId);
+    const dia = Number(this.diaMover());
+    const hora = this.horaMover();
+    if (!horario || horario.estado !== 'BORRADOR' || !sesion ||
+        !Number.isInteger(dia) || dia < 1 || dia > 6 ||
+        !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(hora)) return null;
+    return {
+      horario, sesion,
+      datos: {
+        grupoId: sesion.grupoId,
+        dia,
+        horaInicio: `${hora}:00`,
+        sesionExcluida: sesion.id
+      }
+    };
+  }
+
+  validarHorario(): void {
+    const propuesta = this.prepararMovimiento();
+    if (!propuesta || this.validando() || this.moviendo()) {
+      this.errorValidacion.set('Selecciona una sesión, un día y una hora de inicio válidos.');
+      return;
+    }
+    this.validando.set(true);
+    this.resultadoValidacion.set(null);
+    this.ultimaPropuesta.set(null);
+    this.errorValidacion.set('');
+
+    this.horariosService.validar(propuesta.horario.id, propuesta.datos)
+      .pipe(finalize(() => this.validando.set(false)))
       .subscribe({
-
         next: resultado => {
           this.resultadoValidacion.set(resultado);
+          this.ultimaPropuesta.set(JSON.stringify(propuesta.datos));
         },
-
-        error: err => {
-
-          console.error(
-            'Error validando horario:',
-            err
-          );
-
-          const mensaje =
-            err.error?.detail ??
-            err.error?.error ??
-            err.error?.message;
-
-          this.errorValidacion.set(
-            typeof mensaje === 'string'
-              ? mensaje
-              : 'No fue posible validar el horario.'
-          );
+        error: (err: HttpErrorResponse) => {
+          this.errorValidacion.set(err.status === 409
+            ? 'El horario no está disponible para edición.'
+            : 'No fue posible previsualizar el movimiento.');
         }
+      });
+  }
 
+  moverSesion(): void {
+    const propuesta = this.prepararMovimiento();
+    if (!propuesta || this.moviendo() ||
+        this.ultimaPropuesta() !== JSON.stringify(propuesta.datos) ||
+        this.resultadoValidacion()?.permitido !== true) return;
+    this.moviendo.set(true);
+    this.errorValidacion.set('');
+    this.horariosService.mover(propuesta.horario.id, propuesta.sesion.id, {
+      dia: propuesta.datos.dia,
+      horaInicio: propuesta.datos.horaInicio
+    }).pipe(finalize(() => this.moviendo.set(false)))
+      .subscribe({
+        next: resultado => {
+          this.resultadoValidacion.set(resultado.validacion);
+          if (resultado.aplicado) {
+            this.cargarHistorial(propuesta.horario.periodoId, propuesta.horario.id);
+          } else {
+            this.errorValidacion.set('El servidor rechazó el movimiento. Revisa las incidencias.');
+            this.ultimaPropuesta.set(null);
+          }
+        },
+        error: () => {
+          this.errorValidacion.set('No se pudo aplicar el movimiento. Comprueba el estado del horario.');
+          this.ultimaPropuesta.set(null);
+        }
       });
   }
 }

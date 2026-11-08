@@ -1,9 +1,10 @@
 <mat-toolbar class="navbar">
   <span class="titulo">Sistema de Asignación de Horarios</span>
   <span class="espaciador"></span>
-  <span class="etiqueta-demo">VISTA PREVIA · {{ sesion.nombre() }}</span>
-  <button mat-icon-button type="button" aria-label="Salir de la vista previa"
-          title="Salir de la vista previa" (click)="salir()">
+  <span class="etiqueta-usuario">{{ auth.sesion()?.identificador }} · {{ nombreRol() }}</span>
+  @if (error()) { <span class="error-sesion" role="alert">{{ error() }}</span> }
+  <button mat-icon-button type="button" aria-label="Cerrar sesión" title="Cerrar sesión"
+          [disabled]="saliendo()" (click)="salir()">
     <mat-icon>logout</mat-icon>
   </button>
 </mat-toolbar>
