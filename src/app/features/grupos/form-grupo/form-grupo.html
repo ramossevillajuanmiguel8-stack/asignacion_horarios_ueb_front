@@ -199,8 +199,8 @@
         <mat-spinner diameter="20"></mat-spinner>
         } @else {
         <mat-icon>save</mat-icon>
-        Guardar grupo
         }
+        {{ guardando() ? '' : 'Guardar grupo' }}
 
     </button>
 

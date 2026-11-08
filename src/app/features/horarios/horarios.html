@@ -58,11 +58,10 @@
 
                     @if (generando()) {
                     <mat-spinner diameter="20"></mat-spinner>
-                    Generando...
                     } @else {
                     <mat-icon>auto_awesome</mat-icon>
-                    Generar horario
                     }
+                    {{ generando() ? 'Generando...' : 'Generar horario' }}
                 </button>
 
             </div>

@@ -115,8 +115,8 @@
       <mat-spinner diameter="20"></mat-spinner>
     } @else {
       <mat-icon>save</mat-icon>
-      Guardar cambios
     }
+      {{ guardando() ? '' : 'Guardar cambios' }}
 
   </button>
 
