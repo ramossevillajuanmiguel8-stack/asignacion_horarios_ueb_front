@@ -97,3 +97,13 @@ conservar el origen y las cookies con el proxy de Angular (`proxy.conf.json`).
 - El paquete ZIP omite `node_modules`, `dist` y los cachés. Instala dependencias con `npm ci`.
 - Esta entrega se ha validado mediante TypeScript y el compilador de plantillas de Angular.
   Las pruebas de extremo a extremo con un servidor MySQL real deben completarse en tu equipo.
+
+
+## Drag and drop de horarios
+
+La cuadrícula semanal permite arrastrar sesiones de borradores, validar con Spring Boot y confirmar antes de persistir. Los permisos se toman de la sesión autenticada y el backend vuelve a validarlos. Consulta [docs/DRAG_DROP_HORARIOS.md](docs/DRAG_DROP_HORARIOS.md) para reglas y pruebas.
+
+
+## Paleta institucional y estados de validación
+
+Se unificaron las vistas de Dashboard, docentes, asignaturas, grupos, períodos, calendario, diálogos, barra lateral, barra superior y consulta pública sobre las variables `--ueb-*` en `src/styles.scss`. Se eliminó el vinotinto anterior de títulos, tarjetas, fondos y estados de arrastre. El rojo permanece únicamente como indicador semántico de **errores reales** (`--ueb-error`), no como color de marca. El login muestra los avisos de campos obligatorios después de tocar un campo o intentar enviar el formulario.

@@ -8,7 +8,7 @@ h2[mat-dialog-title] {
   gap: 10px;
 
   mat-icon {
-    color: #8b1538;
+    color: var(--ueb-primary);
   }
 }
 
@@ -19,19 +19,19 @@ mat-dialog-content {
 
 .informacion-docente {
   padding: 16px;
-  background: #f5f6fa;
+  background: var(--ueb-background);
   border-radius: 12px;
   margin-bottom: 20px;
 
   h3 {
     font-size: 18px;
     margin: 0 0 12px;
-    color: #8b1538;
+    color: var(--ueb-primary);
   }
 
   p {
     margin: 6px 0;
-    color: #555;
+    color: var(--ueb-text-secondary);
   }
 }
 
@@ -44,17 +44,17 @@ mat-dialog-content {
 
   min-height: 180px;
   text-align: center;
-  color: #777;
+  color: var(--ueb-text-secondary);
 
   mat-icon {
     font-size: 44px;
     width: 44px;
     height: 44px;
-    color: #8b1538;
+    color: var(--ueb-primary);
   }
 
   .icono-error {
-    color: #b00020;
+    color: var(--ueb-error);
   }
 }
 
@@ -66,7 +66,7 @@ mat-dialog-content {
 
 .restriccion-card {
   background: white;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--ueb-border);
   border-radius: 12px;
 }
 
@@ -84,7 +84,7 @@ mat-dialog-content {
 
   p {
     margin: 6px 0 0;
-    color: #666;
+    color: var(--ueb-text-secondary);
   }
 }
 
@@ -97,13 +97,13 @@ mat-dialog-content {
 }
 
 .disponible {
-  background: #e5f5eb;
-  color: #176b3a;
+  background: var(--ueb-success-soft);
+  color: var(--ueb-success);
 }
 
 .no-disponible {
-  background: #fde8e8;
-  color: #a11616;
+  background: var(--ueb-error-soft);
+  color: var(--ueb-error);
 }
 
 .tipo {
@@ -112,7 +112,7 @@ mat-dialog-content {
   gap: 6px;
   margin-top: 15px;
   font-size: 13px;
-  color: #777;
+  color: var(--ueb-text-secondary);
 
   mat-icon {
     font-size: 18px;

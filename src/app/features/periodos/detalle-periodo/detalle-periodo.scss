@@ -8,7 +8,7 @@ h2[mat-dialog-title] {
   gap: 10px;
 
   mat-icon {
-    color: #8b1538;
+    color: var(--ueb-primary);
   }
 }
 
@@ -21,7 +21,7 @@ mat-dialog-content {
   padding: 8px 0;
 
   h3 {
-    color: #8b1538;
+    color: var(--ueb-primary);
     font-size: 17px;
     font-weight: 700;
     margin: 24px 0 12px;
@@ -39,10 +39,10 @@ mat-dialog-content {
   flex-wrap: wrap;
   gap: 12px;
   padding: 12px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--ueb-border);
 
   span {
-    color: #666;
+    color: var(--ueb-text-secondary);
   }
 
   strong {

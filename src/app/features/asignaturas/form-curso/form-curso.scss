@@ -8,7 +8,7 @@ h2[mat-dialog-title] {
   gap: 10px;
 
   mat-icon {
-    color: #8b1538;
+    color: var(--ueb-primary);
   }
 }
 
@@ -29,7 +29,7 @@ mat-form-field {
 }
 
 .mensaje-error {
-  color: #b00020;
+  color: var(--ueb-error);
   display: flex;
   align-items: center;
   gap: 8px;

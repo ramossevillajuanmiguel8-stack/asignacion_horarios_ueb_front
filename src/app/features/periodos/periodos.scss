@@ -26,7 +26,7 @@
   }
 
   p {
-    color: #777;
+    color: var(--ueb-text-secondary);
     margin: 0;
   }
 }
@@ -62,7 +62,7 @@ table {
 }
 
 th {
-  color: #8b1538;
+  color: var(--ueb-primary);
   font-weight: 700;
 }
 
@@ -78,7 +78,7 @@ td, th {
   justify-content: center;
   gap: 12px;
   text-align: center;
-  color: #777;
+  color: var(--ueb-text-secondary);
 
   mat-icon {
     font-size: 40px;
@@ -89,7 +89,7 @@ td, th {
 
 .total {
   margin-top: 20px;
-  color: #777;
+  color: var(--ueb-text-secondary);
 }
 
 .acciones-tabla {
@@ -98,7 +98,7 @@ td, th {
   gap: 8px;
 
   button {
-    color: #8b1538;
+    color: var(--ueb-primary);
   }
 }
 

@@ -122,7 +122,7 @@
   margin-top:22px; padding-top:18px; border-top:1px solid #d7e5df;
   color:#526c66; font-size:12px; text-align:center; }
 .leyenda-seguridad mat-icon {font-size:18px;width:18px;height:18px;color:#087565}
-.mensaje.error { color:#9b2020; background:#fff1f0; border-radius:6px; padding:10px; }
+.mensaje.error { color:var(--ueb-error); background:var(--ueb-error-soft); border-radius:6px; padding:10px; }
 .enlace-estudiante {
   display: block;
   text-align: center;

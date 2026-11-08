@@ -14,7 +14,7 @@
         <mat-icon matPrefix>person</mat-icon>
         <input matInput type="text" formControlName="identificador" autocomplete="username"
                placeholder="Ej. coordinacion.test" />
-        @if (loginForm.controls.identificador.hasError('required')) {
+        @if (loginForm.controls.identificador.touched && loginForm.controls.identificador.hasError('required')) {
           <mat-error>El identificador es obligatorio</mat-error>
         }
       </mat-form-field>
@@ -27,7 +27,7 @@
                 [attr.aria-label]="ocultarPassword ? 'Mostrar contraseña' : 'Ocultar contraseña'">
           <mat-icon>{{ ocultarPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
-        @if (loginForm.controls.password.hasError('required')) {
+        @if (loginForm.controls.password.touched && loginForm.controls.password.hasError('required')) {
           <mat-error>La contraseña es obligatoria</mat-error>
         }
       </mat-form-field>

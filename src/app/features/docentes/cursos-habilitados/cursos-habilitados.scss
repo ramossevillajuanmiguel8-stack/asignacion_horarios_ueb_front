@@ -8,7 +8,7 @@ h2[mat-dialog-title] {
   gap: 10px;
 
   mat-icon {
-    color: #8b1538;
+    color: var(--ueb-primary);
   }
 }
 
@@ -18,19 +18,19 @@ mat-dialog-content {
 }
 
 .docente-info {
-  background: #f5f1f3;
+  background: var(--ueb-soft);
   padding: 16px;
   border-radius: 12px;
   margin-bottom: 20px;
 
   h3 {
-    color: #8b1538;
+    color: var(--ueb-primary);
     margin: 0 0 8px;
     font-size: 18px;
   }
 
   p {
-    color: #666;
+    color: var(--ueb-text-secondary);
     margin: 0;
     font-size: 13px;
     line-height: 1.5;
@@ -50,11 +50,11 @@ mat-dialog-content {
 
 .curso-item {
   padding: 12px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--ueb-border);
   border-radius: 10px;
 
   &:hover {
-    background: #faf5f7;
+    background: var(--ueb-background);
   }
 }
 
@@ -69,13 +69,13 @@ mat-dialog-content {
 
   span {
     font-size: 12px;
-    color: #777;
+    color: var(--ueb-text-secondary);
   }
 }
 
 .contador {
   margin: 20px 0 0;
-  color: #777;
+  color: var(--ueb-text-secondary);
   font-size: 13px;
 }
 
@@ -86,7 +86,7 @@ mat-dialog-content {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  color: #777;
+  color: var(--ueb-text-secondary);
   text-align: center;
 }
 
@@ -96,8 +96,8 @@ mat-dialog-content {
   gap: 8px;
   margin-top: 15px;
   padding: 12px;
-  background: #fde8e8;
-  color: #a11616;
+  background: var(--ueb-error-soft);
+  color: var(--ueb-error);
   border-radius: 8px;
 }
 

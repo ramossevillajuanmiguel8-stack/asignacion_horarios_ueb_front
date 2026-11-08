@@ -4,7 +4,7 @@ h2[mat-dialog-title] {
   gap: 10px;
 
   mat-icon {
-    color: #8b1538;
+    color: var(--ueb-primary);
   }
 }
 
@@ -16,13 +16,13 @@ mat-dialog-content {
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  background: #f5f1f3;
+  background: var(--ueb-soft);
   border-radius: 10px;
   padding: 14px;
   margin: 16px 0;
 
   mat-icon {
-    color: #8b1538;
+    color: var(--ueb-primary);
     flex-shrink: 0;
   }
 

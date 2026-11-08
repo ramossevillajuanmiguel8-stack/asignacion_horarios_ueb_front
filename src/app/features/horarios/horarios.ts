@@ -21,7 +21,8 @@ import { PeriodoAcademico } from '../../models/periodo.model';
 import {
   Horario,
   ResultadoGeneracion,
-  ValidacionMovimiento
+  ValidacionMovimiento,
+  SesionHorario
 } from '../../models/horario.model';
 
 import { PeriodosService } from '../../services/periodos';
@@ -31,6 +32,10 @@ import { finalize } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { HttpErrorResponse } from '@angular/common/http';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import { AuthApiService } from '../../services/auth-api';
+import { puede } from '../../core/perfiles/perfiles';
+import { construirDiasHorario, FranjaHorario, sesionesFueraDeFranja } from './horario-grid';
 @Component({
   selector: 'app-horarios',
   standalone: true,
@@ -43,7 +48,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatSelectModule,
     MatFormFieldModule,
     MatProgressSpinnerModule,
-    MatDialogModule
+    MatDialogModule,
+    DragDropModule
   ],
   templateUrl: './horarios.html',
   styleUrl: './horarios.scss'
@@ -53,6 +59,7 @@ export class Horarios implements OnInit {
   private periodosService = inject(PeriodosService);
   private horariosService = inject(HorariosService);
   private dialog = inject(MatDialog);
+  private auth = inject(AuthApiService);
 
   periodos = signal<PeriodoAcademico[]>([]);
   historial = signal<Horario[]>([]);
@@ -76,6 +83,54 @@ export class Horarios implements OnInit {
   moviendo = signal(false);
 
   errorValidacion = signal('');
+  origenArrastre = signal(false);
+
+  /** Permiso visual adicional: el backend valida la autorización en cada petición. */
+  puedeAjustar = computed(() => {
+    const rol = this.auth.rol();
+    return rol !== null && puede(rol, 'AJUSTAR_SESIONES') &&
+      this.horarioSeleccionado()?.estado === 'BORRADOR';
+  });
+
+  /** Cada destino representa un bloque real de inicio, fin y día del período. */
+  diasConFranjas = computed(() => construirDiasHorario(
+    this.periodos().find(p => p.id === this.periodoSeleccionado()),
+    this.sesionesOrdenadas()
+  ));
+
+  idsFranjas = computed(() => this.diasConFranjas().flatMap(d => d.franjas.map(f => f.id)));
+
+  sesionesSinFranja = computed(() => sesionesFueraDeFranja(
+    this.horarioSeleccionado(), this.diasConFranjas()
+  ));
+
+  /** No mover datos locales al soltar: el servidor debe aceptar el movimiento primero. */
+  soltarSesion(evento: CdkDragDrop<FranjaHorario, FranjaHorario, SesionHorario>): void {
+    if (!this.puedeAjustar() || this.cargando() || this.generando() ||
+        this.validando() || this.moviendo()) return;
+
+    const sesion = evento.item.data;
+    const destino = evento.container.data;
+    const horario = this.horarioSeleccionado();
+    if (!horario || !sesion || !destino ||
+        !horario.sesiones.some(s => s.id === sesion.id) ||
+        sesion.horarioId !== horario.id) return;
+
+    // Soltar sobre la misma franja no es un cambio.
+    if (sesion.dia === destino.dia && sesion.horaInicio.slice(0, 5) === destino.inicio) return;
+
+    this.seleccionarSesionMover(sesion.id);
+    this.diaMover.set(destino.dia);
+    this.horaMover.set(destino.inicio);
+    this.origenArrastre.set(true);
+    this.validarHorario();
+  }
+
+  cancelarArrastre(): void {
+    if (this.moviendo()) return;
+    this.limpiarMovimiento();
+  }
+
 
 
   sesionesOrdenadas = computed(() => {
@@ -98,21 +153,6 @@ export class Horarios implements OnInit {
     { numero: 5, nombre: 'Viernes' },
     { numero: 6, nombre: 'Sábado' }
   ];
-
-  sesionesPorDia = computed(() => {
-
-    const sesiones = this.sesionesOrdenadas();
-
-    return this.diasSemana.map(dia => ({
-      ...dia,
-
-      sesiones: sesiones.filter(
-        sesion => sesion.dia === dia.numero
-      )
-    }));
-
-  });
-
 
   ngOnInit(): void {
     this.cargarPeriodos();
@@ -293,6 +333,7 @@ export class Horarios implements OnInit {
     this.resultadoValidacion.set(null);
     this.errorValidacion.set('');
     this.ultimaPropuesta.set(null);
+    this.origenArrastre.set(false);
   }
 
   seleccionarSesionMover(id: number): void {
@@ -303,18 +344,21 @@ export class Horarios implements OnInit {
     this.resultadoValidacion.set(null);
     this.ultimaPropuesta.set(null);
     this.errorValidacion.set('');
+    this.origenArrastre.set(false);
   }
 
   cambiarDiaMover(dia: number): void {
     this.diaMover.set(dia);
     this.resultadoValidacion.set(null);
     this.ultimaPropuesta.set(null);
+    this.origenArrastre.set(false);
   }
 
   cambiarHoraMover(hora: string): void {
     this.horaMover.set(hora);
     this.resultadoValidacion.set(null);
     this.ultimaPropuesta.set(null);
+    this.origenArrastre.set(false);
   }
 
   private prepararMovimiento() {
@@ -323,7 +367,7 @@ export class Horarios implements OnInit {
     const sesion = horario?.sesiones.find(s => s.id === sesionId);
     const dia = Number(this.diaMover());
     const hora = this.horaMover();
-    if (!horario || horario.estado !== 'BORRADOR' || !sesion ||
+    if (!this.puedeAjustar() || !horario || horario.estado !== 'BORRADOR' || !sesion ||
         !Number.isInteger(dia) || dia < 1 || dia > 6 ||
         !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(hora)) return null;
     return {
@@ -352,12 +396,18 @@ export class Horarios implements OnInit {
       .pipe(finalize(() => this.validando.set(false)))
       .subscribe({
         next: resultado => {
+          const actual = this.prepararMovimiento();
+          if (actual?.horario.id !== propuesta.horario.id ||
+              actual?.sesion.id !== propuesta.sesion.id ||
+              JSON.stringify(actual.datos) !== JSON.stringify(propuesta.datos)) return;
           this.resultadoValidacion.set(resultado);
           this.ultimaPropuesta.set(JSON.stringify(propuesta.datos));
         },
         error: (err: HttpErrorResponse) => {
           this.errorValidacion.set(err.status === 409
             ? 'El horario no está disponible para edición.'
+            : err.status === 403 ? 'No tienes permisos para ajustar este horario.'
+            : err.status === 401 ? 'Tu sesión expiró. Inicia sesión nuevamente.'
             : 'No fue posible previsualizar el movimiento.');
         }
       });
@@ -365,7 +415,7 @@ export class Horarios implements OnInit {
 
   moverSesion(): void {
     const propuesta = this.prepararMovimiento();
-    if (!propuesta || this.moviendo() ||
+    if (!propuesta || this.validando() || this.moviendo() ||
         this.ultimaPropuesta() !== JSON.stringify(propuesta.datos) ||
         this.resultadoValidacion()?.permitido !== true) return;
     this.moviendo.set(true);
@@ -378,14 +428,19 @@ export class Horarios implements OnInit {
         next: resultado => {
           this.resultadoValidacion.set(resultado.validacion);
           if (resultado.aplicado) {
+            this.origenArrastre.set(false);
             this.cargarHistorial(propuesta.horario.periodoId, propuesta.horario.id);
           } else {
             this.errorValidacion.set('El servidor rechazó el movimiento. Revisa las incidencias.');
             this.ultimaPropuesta.set(null);
           }
         },
-        error: () => {
-          this.errorValidacion.set('No se pudo aplicar el movimiento. Comprueba el estado del horario.');
+        error: (err: HttpErrorResponse) => {
+          this.errorValidacion.set(err.status === 409
+            ? 'El horario fue publicado o dejó de estar disponible para editarse.'
+            : err.status === 403 ? 'No tienes permiso para mover esta sesión.'
+            : err.status === 401 ? 'Tu sesión expiró. Inicia sesión nuevamente.'
+            : 'No se pudo aplicar el movimiento. Comprueba el estado del horario.');
           this.ultimaPropuesta.set(null);
         }
       });

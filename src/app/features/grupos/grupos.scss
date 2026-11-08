@@ -26,7 +26,7 @@
   }
 
   p {
-    color: #777;
+    color: var(--ueb-text-secondary);
     margin: 0;
   }
 }
@@ -67,7 +67,7 @@ table {
 }
 
 th {
-  color: #8b1538;
+  color: var(--ueb-primary);
   font-weight: 700;
 }
 
@@ -77,8 +77,8 @@ th, td {
 
 .etiqueta {
   display: inline-block;
-  background: #e9f5ed;
-  color: #176b3a;
+  background: var(--ueb-success-soft);
+  color: var(--ueb-success);
   padding: 5px 9px;
   border-radius: 8px;
   font-size: 12px;
@@ -86,13 +86,13 @@ th, td {
 }
 
 .etiqueta.advertencia {
-  background: #fff0dd;
-  color: #925400;
+  background: var(--ueb-warning-soft);
+  color: var(--ueb-warning);
 }
 
 .etiqueta.especial {
-  background: #f3e6ed;
-  color: #8b1538;
+  background: var(--ueb-soft);
+  color: var(--ueb-primary);
 }
 
 .estado {
@@ -103,7 +103,7 @@ th, td {
   flex-direction: column;
   text-align: center;
   gap: 12px;
-  color: #777;
+  color: var(--ueb-text-secondary);
 
   mat-icon {
     font-size: 40px;
@@ -114,7 +114,7 @@ th, td {
 
 .total {
   margin-top: 20px;
-  color: #777;
+  color: var(--ueb-text-secondary);
 }
 
 @media (max-width: 700px) {
