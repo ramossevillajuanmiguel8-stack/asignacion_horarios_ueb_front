@@ -1,11 +1,12 @@
 .navbar {
-  background: white;
-  color: #333;
-  border-bottom: 1px solid #e5e5e5;
+  background: var(--ueb-surface, #ffffff);
+  color: var(--ueb-text, #173b37);
+  border-bottom: 1px solid var(--ueb-border, #d7e5df);
   padding: 0 24px;
   min-height: 64px;
 
   .titulo {
+    color: var(--ueb-primary, #004040);
     font-size: 18px;
     font-weight: 600;
   }
@@ -13,4 +14,33 @@
   .espaciador {
     flex: 1;
   }
+
+  .etiqueta-usuario {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ueb-primary, #004040);
+    padding: 6px 12px;
+    background: var(--ueb-soft, #e8f4ef);
+    border: 1px solid var(--ueb-border, #d7e5df);
+    border-radius: 99px;
+    white-space: normal;
+    line-height: 1.25;
+    text-align: right;
+  }
 }
+
+@media (max-width: 700px) {
+  .navbar {
+    padding: 0 10px;
+
+    .titulo {
+      font-size: 13px;
+    }
+
+    .etiqueta-usuario {
+      font-size: 10px;
+    }
+  }
+}
+
+.error-sesion { color:#aa2323; font-size:11px; padding:4px 8px; max-width:260px; white-space:normal; }

@@ -1,17 +1,10 @@
 <mat-toolbar class="navbar">
-
-  <span class="titulo">
-    Sistema de Asignación de Horarios
-  </span>
-
+  <span class="titulo">Sistema de Asignación de Horarios</span>
   <span class="espaciador"></span>
-
-  <button mat-icon-button aria-label="Notificaciones">
-    <mat-icon>notifications</mat-icon>
+  <span class="etiqueta-usuario">{{ auth.sesion()?.identificador }} · {{ nombreRol() }}</span>
+  @if (error()) { <span class="error-sesion" role="alert">{{ error() }}</span> }
+  <button mat-icon-button type="button" aria-label="Cerrar sesión" title="Cerrar sesión"
+          [disabled]="saliendo()" (click)="salir()">
+    <mat-icon>logout</mat-icon>
   </button>
-
-  <button mat-icon-button aria-label="Perfil de usuario">
-    <mat-icon>account_circle</mat-icon>
-  </button>
-
 </mat-toolbar>

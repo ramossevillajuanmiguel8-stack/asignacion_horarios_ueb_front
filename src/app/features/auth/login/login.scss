@@ -1,23 +1,50 @@
+/* Login institucional: verde petróleo + acentos hoja y naranja.
+   Acceso institucional mediante Spring Security. */
 .login-container {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(
-    135deg,
-    #8b1538,
-    #4a0b1f
-  );
-  padding: 20px;
+  padding: 24px 16px;
+  background: linear-gradient(120deg, #003636 0%, #004040 57%, #07544d 100%);
+}
+
+/* Figuras suaves similares a las superficies de la referencia UEB. */
+.login-container::before,
+.login-container::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+  border-radius: 48px;
+  transform: rotate(-24deg);
+  background: rgba(0, 157, 113, 0.08);
+}
+
+.login-container::before {
+  width: 420px;
+  height: 700px;
+  left: -280px;
+  bottom: -350px;
+}
+
+.login-container::after {
+  width: 440px;
+  height: 740px;
+  right: -260px;
+  top: -420px;
 }
 
 .login-card {
   width: 100%;
-  max-width: 430px;
+  max-width: 480px;
   padding: 35px;
   border-radius: 18px;
-  background: white;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  background: #ffffff;
+  box-shadow: 0 18px 48px rgba(0, 22, 21, 0.23);
 }
 
 .login-header {
@@ -27,7 +54,8 @@
   .logo {
     width: 70px;
     height: 70px;
-    background: #8b1538;
+    background: var(--ueb-primary-active, #087565);
+    border: 2px solid rgba(101, 216, 61, 0.35);
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -35,7 +63,7 @@
     margin: 0 auto 18px;
 
     mat-icon {
-      color: white;
+      color: #ffffff;
       font-size: 38px;
       width: 38px;
       height: 38px;
@@ -46,18 +74,19 @@
     font-size: 23px;
     font-weight: 700;
     margin-bottom: 8px;
-    color: #8b1538;
+    color: var(--ueb-primary, #004040);
   }
 
   p {
     font-size: 13px;
-    color: #777;
+    color: var(--ueb-text-secondary, #617b75);
   }
 
   h2 {
     margin-top: 30px;
     font-size: 20px;
     font-weight: 600;
+    color: var(--ueb-text, #173b37);
   }
 }
 
@@ -69,21 +98,42 @@
 .login-button {
   width: 100%;
   height: 48px;
-  background: #8b1538 !important;
-  color: white !important;
-  font-size: 16px;
   border-radius: 8px;
-}
+  font-size: 16px;
+  background: var(--ueb-primary-active, #087565) !important;
+  color: #ffffff !important;
+  --mdc-filled-button-container-color: #087565;
+  --mdc-filled-button-label-text-color: #ffffff;
 
-.login-button:hover {
-  background: #6d102b !important;
+  &:hover {
+    background: var(--ueb-primary-hover, #075953) !important;
+  }
 }
 
 .mensaje {
   margin-top: 18px;
   text-align: center;
-  color: #8b1538;
+  color: var(--ueb-primary, #004040);
   font-size: 13px;
+}
+
+ .subtitulo { line-height: 1.5; margin-top: 8px; }
+.leyenda-seguridad { display:flex; align-items:center; justify-content:center; gap:7px;
+  margin-top:22px; padding-top:18px; border-top:1px solid #d7e5df;
+  color:#526c66; font-size:12px; text-align:center; }
+.leyenda-seguridad mat-icon {font-size:18px;width:18px;height:18px;color:#087565}
+.mensaje.error { color:#9b2020; background:#fff1f0; border-radius:6px; padding:10px; }
+.enlace-estudiante {
+  display: block;
+  text-align: center;
+  margin-top: 14px;
+  font-size: 13px;
+  color: #006b58;
+  text-decoration-color: #006b58;
+
+  &:hover {
+    color: var(--ueb-primary, #004040);
+  }
 }
 
 .footer {
@@ -91,7 +141,7 @@
   text-align: center;
 
   p {
-    color: #999;
+    color: #80938e;
     font-size: 12px;
   }
 }

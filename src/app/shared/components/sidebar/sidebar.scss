@@ -1,43 +1,83 @@
+/* Sidebar: contraste alto para Material List. */
 .sidebar {
   height: 100%;
-  background: #8b1538;
-  color: white;
+  background: var(--ueb-primary, #004040);
+  color: #ffffff;
 
   .logo {
     padding: 24px 16px;
     text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.20);
 
     h2 {
       margin: 0;
       font-size: 30px;
       font-weight: 700;
-      color: white;
+      color: #ffffff;
     }
 
     p {
       font-size: 13px;
       margin-top: 5px;
-      color: white;
+      color: #d7ece5;
     }
   }
 
-  a[mat-list-item] {
+  a[mat-list-item],
+  a.mat-mdc-list-item {
     margin: 5px 8px;
     width: calc(100% - 16px);
     border-radius: 8px;
+    color: #edf8f4 !important;
+    transition: background-color 150ms ease, color 150ms ease;
 
-    --mdc-list-list-item-label-text-color: white;
-    --mdc-list-list-item-leading-icon-color: white;
-    --mdc-list-list-item-hover-label-text-color: white;
-    --mdc-list-list-item-focus-label-text-color: white;
+    /* Compatibilidad con tokens MDC y Material actuales. */
+    --mdc-list-list-item-label-text-color: #edf8f4;
+    --mdc-list-list-item-leading-icon-color: #daf0e7;
+    --mat-list-list-item-label-text-color: #edf8f4;
+    --mat-list-list-item-leading-icon-color: #daf0e7;
+    --mdc-list-list-item-hover-label-text-color: #ffffff;
+    --mdc-list-list-item-focus-label-text-color: #ffffff;
+
+    [matListItemTitle],
+    .mat-mdc-list-item-title {
+      color: #edf8f4 !important;
+      font-weight: 500;
+    }
+
+    mat-icon,
+    mat-icon[matListItemIcon] {
+      color: #daf0e7 !important;
+    }
 
     &:hover {
-      background: rgba(255, 255, 255, 0.12);
+      background: var(--ueb-primary-hover, #075953);
+
+      [matListItemTitle],
+      .mat-mdc-list-item-title,
+      mat-icon {
+        color: #ffffff !important;
+      }
     }
 
     &.activo {
-      background: rgba(255, 255, 255, 0.2);
+      background: var(--ueb-primary-active, #087565);
+      box-shadow: inset 4px 0 0 var(--ueb-lime, #65d83d);
+      --mdc-list-list-item-label-text-color: #ffffff;
+      --mat-list-list-item-label-text-color: #ffffff;
+      --mdc-list-list-item-leading-icon-color: #ffffff;
+      --mat-list-list-item-leading-icon-color: #ffffff;
+
+      [matListItemTitle],
+      .mat-mdc-list-item-title,
+      mat-icon {
+        color: #ffffff !important;
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ueb-lime, #65d83d);
+      outline-offset: 2px;
     }
   }
 }
