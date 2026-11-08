@@ -6,7 +6,7 @@
   }
 
   .subtitulo {
-    color: #777;
+    color: var(--ueb-text-secondary);
     margin-bottom: 30px;
   }
 }
@@ -23,7 +23,7 @@
   padding: 20px;
 
   mat-icon {
-    color: #8b1538;
+    color: var(--ueb-primary);
     font-size: 36px;
     width: 36px;
     height: 36px;
@@ -35,7 +35,7 @@
   }
 
   p {
-    color: #777;
+    color: var(--ueb-text-secondary);
   }
 }
 
@@ -54,3 +54,5 @@
     grid-template-columns: 1fr;
   }
 }
+.dashboard > button { margin-bottom: 20px; }
+.error {color:var(--ueb-error);background:var(--ueb-error-soft);padding:12px;border-radius:7px}

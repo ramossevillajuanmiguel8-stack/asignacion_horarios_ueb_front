@@ -15,7 +15,7 @@
     flex: 1;
   }
 
-  .etiqueta-demo {
+  .etiqueta-usuario {
     font-size: 12px;
     font-weight: 600;
     color: var(--ueb-primary, #004040);
@@ -37,8 +37,10 @@
       font-size: 13px;
     }
 
-    .etiqueta-demo {
+    .etiqueta-usuario {
       font-size: 10px;
     }
   }
 }
+
+.error-sesion { color:var(--ueb-error); font-size:11px; padding:4px 8px; max-width:260px; white-space:normal; }

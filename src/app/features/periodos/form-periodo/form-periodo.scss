@@ -8,7 +8,7 @@ h2[mat-dialog-title] {
     gap: 10px;
 
     mat-icon {
-        color: #8b1538;
+        color: var(--ueb-primary);
     }
 }
 
@@ -32,7 +32,7 @@ mat-form-field {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #b00020;
+    color: var(--ueb-error);
 }
 
 mat-dialog-actions {
@@ -53,12 +53,12 @@ mat-dialog-actions {
     padding: 14px;
     border-radius: 10px;
 
-    background: #f5f1f3;
-    color: #5c3542;
+    background: var(--ueb-soft);
+    color: var(--ueb-text-secondary);
 
     mat-icon {
         flex-shrink: 0;
-        color: #8b1538;
+        color: var(--ueb-primary);
     }
 
     p {

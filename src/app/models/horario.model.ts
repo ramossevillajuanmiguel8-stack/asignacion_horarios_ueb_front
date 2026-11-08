@@ -43,3 +43,20 @@ export interface ResultadoGeneracion {
   noUbicadas: SesionNoUbicada[];
   advertencias: IncidenciaHorario[];
 }
+export interface PrevisualizarMovimiento {
+  grupoId: number;
+  dia: number;
+  horaInicio: string;
+  sesionExcluida: number | null;
+}
+
+export interface ValidacionMovimiento {
+  permitido: boolean;
+  incidencias: IncidenciaHorario[];
+}
+
+export interface ResultadoMovimiento {
+  aplicado: boolean;
+  validacion: ValidacionMovimiento;
+  sesion: SesionHorario;
+}

@@ -5,54 +5,44 @@
       <h1>Universidad El Bosque</h1>
       <p>Sistema de Asignación de Horarios</p>
       <h2>Iniciar sesión</h2>
+      <p class="subtitulo">Accede con el identificador y la contraseña de tu cuenta institucional.</p>
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="iniciarSesion()">
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Correo electrónico</mat-label>
-        <mat-icon matPrefix>email</mat-icon>
-        <input matInput type="email" formControlName="correo" placeholder="correo@ejemplo.com">
-        @if (loginForm.controls.correo.hasError('required')) {
-          <mat-error>El correo es obligatorio</mat-error>
-        }
-        @if (loginForm.controls.correo.hasError('email')) {
-          <mat-error>Ingrese un correo válido</mat-error>
+        <mat-label>Identificador de usuario</mat-label>
+        <mat-icon matPrefix>person</mat-icon>
+        <input matInput type="text" formControlName="identificador" autocomplete="username"
+               placeholder="Ej. coordinacion.test" />
+        @if (loginForm.controls.identificador.touched && loginForm.controls.identificador.hasError('required')) {
+          <mat-error>El identificador es obligatorio</mat-error>
         }
       </mat-form-field>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Contraseña</mat-label>
         <mat-icon matPrefix>lock</mat-icon>
-        <input matInput [type]="ocultarPassword ? 'password' : 'text'" formControlName="password">
+        <input matInput [type]="ocultarPassword ? 'password' : 'text'"
+               formControlName="password" autocomplete="current-password" />
         <button mat-icon-button matSuffix type="button" (click)="ocultarPassword = !ocultarPassword"
-                aria-label="Mostrar u ocultar contraseña">
+                [attr.aria-label]="ocultarPassword ? 'Mostrar contraseña' : 'Ocultar contraseña'">
           <mat-icon>{{ ocultarPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
-        @if (loginForm.controls.password.hasError('required')) {
+        @if (loginForm.controls.password.touched && loginForm.controls.password.hasError('required')) {
           <mat-error>La contraseña es obligatoria</mat-error>
         }
       </mat-form-field>
-      <button mat-flat-button type="submit" class="login-button">Iniciar sesión</button>
-      @if (mensaje) { <p class="mensaje">{{ mensaje }}</p> }
+      <button mat-flat-button type="submit" class="login-button"
+              [disabled]="enviando() || comprobando()">
+        {{ enviando() ? 'Ingresando...' : comprobando() ? 'Comprobando sesión...' : 'Iniciar sesión' }}
+      </button>
+      @if (mensaje()) { <p class="mensaje error" role="alert">{{ mensaje() }}</p> }
     </form>
 
-    <div class="vista-previa">
-      <h3>Vista previa de perfiles (desarrollo)</h3>
-      <p>Solo cambia los menús y pantallas. No inicia sesión ni otorga permisos reales.</p>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Perfil para visualizar</mat-label>
-        <mat-select [value]="rolDemo" (selectionChange)="rolDemo = $event.value">
-          <mat-option value="COMITE_TACTICO">Comité Táctico</mat-option>
-          <mat-option value="COORDINACION_ACADEMICA">Coordinación académica</mat-option>
-          <mat-option value="DOCENTE">Docente</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <button mat-stroked-button type="button" class="full-width" (click)="probarPerfil()">
-        <mat-icon>visibility</mat-icon> Probar interfaz
-      </button>
-    </div>
+    <p class="leyenda-seguridad"><mat-icon>verified_user</mat-icon>
+      El acceso y los permisos son verificados por el servidor.</p>
 
     <a routerLink="/consulta-publica" class="enlace-estudiante">
-      Consultar horario publicado (Estudiantes)
+      Consultar horario publicado (estudiantes)
     </a>
     <div class="footer"><p>Universidad El Bosque © 2026</p></div>
   </mat-card>

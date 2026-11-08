@@ -3,7 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { RolInterno } from '../../../core/perfiles/perfiles';
-import { SesionVistaPrevia } from '../../../core/perfiles/sesion-vista-previa';
+import { AuthApiService } from '../../../services/auth-api';
 
 interface ItemMenu {
   nombre: string;
@@ -32,9 +32,9 @@ const MENU: ItemMenu[] = [
   styleUrl: './sidebar.scss'
 })
 export class Sidebar {
-  private readonly sesion = inject(SesionVistaPrevia);
+  private readonly sesion = inject(AuthApiService);
   readonly menu = computed(() => {
-    const rol = this.sesion.rol();
+    const rol = this.sesion.rol() as RolInterno | null;
     return rol ? MENU.filter(item => item.roles.includes(rol)) : [];
   });
 }

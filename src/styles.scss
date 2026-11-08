@@ -16,13 +16,17 @@
   --ueb-surface: #ffffff;
   --ueb-soft: #e8f4ef;
   --ueb-text: #173b37;
-  --ueb-text-secondary: #617b75;
+  --ueb-text-secondary: #49645d;
   --ueb-border: #d7e5df;
 
   // Estados funcionales; no usar verde para indicar errores.
   --ueb-success: #168454;
   --ueb-warning: #a95e06;
   --ueb-error: #b42318;
+  --ueb-error-soft: #fff1ee;
+  --ueb-warning-soft: #fff4e4;
+  --ueb-success-soft: #e8f5ee;
+  --ueb-focus-ring: #65d83d;
 }
 
 html {
@@ -55,6 +59,9 @@ html {
     on-tertiary-container: #3d2400,
     surface: #ffffff,
     on-surface: #173b37,
+    on-surface-variant: #49645d,
+    surface-container-high: #e8f4ef,
+    surface-container-highest: #dcece5,
     surface-container-low: #f6faf8,
     surface-container: #edf5f1,
     outline: #76958a,
@@ -112,4 +119,35 @@ app-dashboard .stat-card mat-icon,
 app-dashboard .stats-card mat-icon,
 app-dashboard .mat-mdc-card .mat-icon {
   color: var(--ueb-green, #009d71) !important;
+}
+
+
+/* Componentes Material: identidad UEB en estados normales y de foco.
+   Los estados inválidos conservan la semántica de error de Material. */
+.mat-mdc-form-field:not(.mat-form-field-invalid) {
+  --mdc-outlined-text-field-focus-outline-color: var(--ueb-primary-active);
+  --mdc-outlined-text-field-focus-label-text-color: var(--ueb-primary);
+  --mdc-outlined-text-field-caret-color: var(--ueb-primary-active);
+  --mdc-outlined-text-field-outline-color: #76958a;
+  --mdc-outlined-text-field-label-text-color: var(--ueb-text-secondary);
+  --mdc-outlined-text-field-input-text-color: var(--ueb-text);
+  --mat-form-field-leading-icon-color: var(--ueb-primary);
+  --mat-form-field-trailing-icon-color: var(--ueb-primary);
+}
+
+/* Contraste en tablas, títulos e iconos comunes sin sobrescribir alertas. */
+:where(h1, h2, h3, h4, th) { color: var(--ueb-text); }
+:where(a) { color: var(--ueb-primary-active); }
+:where(a:hover) { color: var(--ueb-primary); }
+:where(a:focus-visible, button:focus-visible) {
+  outline: 2px solid var(--ueb-primary-active);
+  outline-offset: 2px;
+}
+
+/* Las vistas flotantes de CDK se renderizan fuera del componente. */
+.cdk-drag-preview {
+  background: var(--ueb-surface);
+  color: var(--ueb-text);
+  border: 1px solid var(--ueb-border);
+  border-left: 4px solid var(--ueb-primary-active);
 }

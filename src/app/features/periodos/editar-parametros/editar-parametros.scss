@@ -8,7 +8,7 @@ h2[mat-dialog-title] {
   gap: 10px;
 
   mat-icon {
-    color: #8b1538;
+    color: var(--ueb-primary);
   }
 }
 
@@ -20,28 +20,28 @@ mat-dialog-content {
 
 .seccion {
   padding: 20px 0;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--ueb-border);
 
   h3 {
     display: flex;
     align-items: center;
     gap: 10px;
 
-    color: #8b1538;
+    color: var(--ueb-primary);
     font-size: 17px;
     font-weight: 700;
 
     margin: 0 0 14px;
 
     mat-icon {
-      color: #8b1538;
+      color: var(--ueb-primary);
     }
   }
 }
 
 .descripcion {
   font-size: 13px;
-  color: #777;
+  color: var(--ueb-text-secondary);
   margin-bottom: 20px;
 }
 
@@ -63,13 +63,13 @@ mat-dialog-content {
   padding: 16px;
   margin-top: 24px;
 
-  background: #f5f1f3;
-  color: #5c3542;
+  background: var(--ueb-soft);
+  color: var(--ueb-text-secondary);
   border-radius: 10px;
 
   mat-icon {
     flex-shrink: 0;
-    color: #8b1538;
+    color: var(--ueb-primary);
   }
 
   p {
@@ -84,8 +84,8 @@ mat-dialog-content {
   align-items: center;
   gap: 10px;
 
-  background: #fde8e8;
-  color: #a11616;
+  background: var(--ueb-error-soft);
+  color: var(--ueb-error);
 
   border-radius: 8px;
   padding: 14px;
@@ -102,7 +102,7 @@ mat-dialog-content {
 
   gap: 12px;
 
-  color: #777;
+  color: var(--ueb-text-secondary);
   text-align: center;
 }
 

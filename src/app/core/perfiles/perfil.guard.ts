@@ -1,23 +1,29 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { catchError, map, of } from 'rxjs';
+import { AuthApiService } from '../../services/auth-api';
 import { RolInterno } from './perfiles';
-import { SesionVistaPrevia } from './sesion-vista-previa';
 
-/** Guarda visual, NO una medida de seguridad. */
-export const vistaPreviaGuard: CanActivateFn = () => {
-  const sesion = inject(SesionVistaPrevia);
+/** Se consulta el servidor en cada entrada a una ruta privada, también al recargar la página. */
+export const sesionGuard: CanActivateFn = () => {
+  const auth = inject(AuthApiService);
   const router = inject(Router);
-  return sesion.rol() !== null ? true : router.createUrlTree(['/login']);
+  return auth.obtenerSesion().pipe(
+    map(usuario => usuario ? true : router.createUrlTree(['/login'])),
+    catchError(() => of(router.createUrlTree(['/login'])))
+  );
 };
 
-/** Restringe navegación y módulos mostrados en la demo de perfiles. */
+/** Control de navegación. El backend sigue siendo la única autoridad sobre permisos. */
 export const perfilGuard: CanActivateFn = route => {
-  const sesion = inject(SesionVistaPrevia);
+  const auth = inject(AuthApiService);
   const router = inject(Router);
-  const rol = sesion.rol();
+  const rol = auth.rol();
   if (!rol) return router.createUrlTree(['/login']);
   const roles = route.data['roles'] as readonly RolInterno[] | undefined;
-  return roles?.includes(rol)
-    ? true
-    : router.createUrlTree([sesion.rutaInicial()]);
+  if (roles?.includes(rol as RolInterno)) return true;
+  const destino = rol === 'DOCENTE' ? '/mi-horario'
+    : rol === 'COMITE_TACTICO' || rol === 'COORDINACION_ACADEMICA' ? '/dashboard'
+    : '/consulta-publica';
+  return router.createUrlTree([destino]);
 };

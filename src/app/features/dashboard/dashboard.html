@@ -1,41 +1,24 @@
 <div class="dashboard">
-
-  <h1>Panel de Control</h1>
-  <p class="subtitulo">
-    Bienvenido al Sistema de Asignación de Horarios UEB
-  </p>
-
+  <h1>Panel de control</h1>
+  <p class="subtitulo">Datos académicos consultados en tiempo real desde el backend.</p>
+  <button mat-stroked-button type="button" [disabled]="cargando()" (click)="actualizar()">
+    <mat-icon>refresh</mat-icon> Actualizar información
+  </button>
+  @if (cargando()) { <p>Cargando datos académicos...</p> }
+  @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
   <div class="tarjetas">
-
-    @for (item of estadisticas; track item.titulo) {
-      <mat-card class="tarjeta">
-        <mat-card-content>
-
-          <mat-icon>{{ item.icono }}</mat-icon>
-
-          <h2>{{ item.valor }}</h2>
-
-          <p>{{ item.titulo }}</p>
-
-        </mat-card-content>
-      </mat-card>
+    @for (item of estadisticas(); track item.titulo) {
+      <mat-card class="tarjeta"><mat-card-content>
+        <mat-icon>{{ item.icono }}</mat-icon>
+        <h2>{{ item.valor }}</h2><p>{{ item.titulo }}</p>
+      </mat-card-content></mat-card>
     }
-
   </div>
-
   <mat-card class="seccion-horarios">
-    <mat-card-header>
-      <mat-card-title>
-        Resumen de horarios académicos
-      </mat-card-title>
-    </mat-card-header>
-
+    <mat-card-header><mat-card-title>Horarios académicos</mat-card-title></mat-card-header>
     <mat-card-content>
-      <p>
-        Los horarios aparecerán aquí cuando conectemos
-        el frontend con el backend.
-      </p>
+      <p>Consulta los borradores y horarios publicados en la sección de Gestión de horarios.</p>
+      <a mat-stroked-button routerLink="/horarios"><mat-icon>calendar_month</mat-icon> Ver horarios</a>
     </mat-card-content>
   </mat-card>
-
 </div>

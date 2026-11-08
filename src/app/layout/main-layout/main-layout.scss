@@ -5,12 +5,12 @@
 .menu-lateral {
   width: 250px;
   border-radius: 0;
-  background: #8b1538;
+  background: var(--ueb-primary);
 }
 
 .contenido {
   padding: 24px;
-  background: #f5f6fa;
+  background: var(--ueb-background);
   min-height: calc(100vh - 64px);
   box-sizing: border-box;
 }

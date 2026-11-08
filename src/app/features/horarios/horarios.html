@@ -6,7 +6,7 @@
             <p>Generación y consulta de horarios académicos.</p>
         </div>
 
-        <button mat-stroked-button (click)="cargarPeriodos()" [disabled]="cargando() || generando()">
+        <button mat-stroked-button (click)="cargarPeriodos()" [disabled]="cargando() || generando() || validando() || moviendo()">
 
             <mat-icon>refresh</mat-icon>
             Actualizar
@@ -21,7 +21,7 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Período académico</mat-label>
 
-                    <mat-select [value]="periodoSeleccionado()" [disabled]="cargando() || generando()"
+                    <mat-select [value]="periodoSeleccionado()" [disabled]="cargando() || generando() || validando() || moviendo()"
                         (valueChange)="seleccionarPeriodo($event)">
 
                         @for (periodo of periodos(); track periodo.id) {
@@ -37,7 +37,7 @@
                     <mat-label>Horario</mat-label>
 
                     <mat-select [value]="horarioSeleccionado()?.id"
-                        [disabled]="cargando() || generando() || historial().length === 0"
+                        [disabled]="cargando() || generando() || validando() || moviendo() || historial().length === 0"
                         (valueChange)="seleccionarHorario($event)">
 
                         @for (horario of historial(); track horario.id) {
@@ -53,7 +53,7 @@
                 <button mat-flat-button class="generar" (click)="confirmarGeneracion()" [disabled]="
             periodoSeleccionado() === null ||
             cargando() ||
-            generando()
+            generando() || validando() || moviendo()
           ">
 
                     @if (generando()) {
@@ -170,59 +170,63 @@
                 </div>
 
                 <section class="seccion-validacion">
-
-                    <div class="validacion-encabezado">
-
-                        <div>
-                            <h3>Validación académica</h3>
-                            <p>
-                                Comprueba las restricciones y conflictos
-                                antes de publicar el horario.
-                            </p>
-                        </div>
-
-                        <button mat-stroked-button type="button" [disabled]="validando() || generando() || cargando()"
-                            (click)="validarHorario()">
-
-                            @if (validando()) {
-                            <mat-spinner diameter="20"></mat-spinner>
-                            } @else {
-                            <mat-icon>fact_check</mat-icon>
-                            }
-
-                            {{ validando() ? 'Validando...' : 'Validar horario' }}
-
-                        </button>
-
+                  <div class="validacion-encabezado">
+                    <div>
+                      <h3>Previsualización y movimiento de sesiones</h3>
+                      <p>El servidor verifica las restricciones antes de aplicar cambios.</p>
                     </div>
-
-                    @if (errorValidacion()) {
-
-                    <div class="mensaje-error" role="alert">
-                        <mat-icon>error_outline</mat-icon>
-                        {{ errorValidacion() }}
+                  </div>
+                  @if (puedeAjustar()) {
+                    <div class="controles movimiento-controles">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Sesión</mat-label>
+                        <mat-select [value]="sesionMoverId()" (valueChange)="seleccionarSesionMover($event)">
+                          @for (sesion of horario.sesiones; track sesion.id) {
+                            <mat-option [value]="sesion.id">#{{ sesion.id }} · {{ sesion.grupo }} · {{ sesion.curso }}</mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                      <mat-form-field appearance="outline">
+                        <mat-label>Día propuesto</mat-label>
+                        <mat-select [value]="diaMover()" (valueChange)="cambiarDiaMover($event)">
+                          @for (dia of diasSemana; track dia.numero) {
+                            <mat-option [value]="dia.numero">{{ dia.nombre }}</mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                      <mat-form-field appearance="outline">
+                        <mat-label>Hora de inicio</mat-label>
+                        <input matInput type="time" [value]="horaMover()"
+                               (input)="cambiarHoraMover($any($event.target).value)" />
+                      </mat-form-field>
+                      <button mat-stroked-button type="button"
+                              [disabled]="sesionMoverId() === null || validando() || moviendo() || generando()"
+                              (click)="validarHorario()">
+                        <mat-icon>fact_check</mat-icon> Previsualizar
+                      </button>
+                      <button mat-flat-button type="button"
+                              [disabled]="moviendo() || validando() || resultadoValidacion()?.permitido !== true ||
+                                ultimaPropuesta() === null"
+                              (click)="moverSesion()">
+                        <mat-icon>swap_horiz</mat-icon> {{ moviendo() ? 'Moviendo...' : 'Aplicar movimiento' }}
+                      </button>
                     </div>
-
-                    }
-
-                    @if (resultadoValidacion(); as resultado) {
-
+                  } @else if (horario.estado === 'PUBLICADO') {
+                    <p>Este horario está publicado: sus sesiones son de solo lectura.</p>
+                  } @else {
+                    <p>No tienes autorización para editar sesiones.</p>
+                  }
+                  @if (errorValidacion()) {
+                    <div class="mensaje-error" role="alert"><mat-icon>error_outline</mat-icon>{{ errorValidacion() }}</div>
+                  }
+                  @if (resultadoValidacion(); as resultado) {
                     <div class="resultado-validacion">
-
-                        <h4>Respuesta de validación</h4>
-
-                        <p>
-                            El backend respondió correctamente.
-                            Vamos a verificar su estructura antes
-                            de mostrar los conflictos individualmente.
-                        </p>
-
-                        <pre>{{ resultado | json }}</pre>
-
+                      <h4>{{ resultado.permitido ? 'Movimiento permitido' : 'Movimiento no permitido' }}</h4>
+                      @for (incidencia of resultado.incidencias; track $index) {
+                        <p><strong>{{ incidencia.codigo }}</strong> · {{ incidencia.motivo }}</p>
+                      } @empty { <p>No se encontraron incidencias.</p> }
                     </div>
-
-                    }
-
+                  }
                 </section>
 
                 <div class="resumen">
@@ -238,88 +242,111 @@
                 </div>
 
                 <h3>Sesiones académicas</h3>
-                <section class="calendario-semanal">
-
+                <section class="calendario-semanal" aria-label="Calendario semanal por franjas">
                     <div class="calendario-encabezado">
                         <div>
                             <h3>Calendario semanal</h3>
-
-                            <p>
-                                Distribución de las sesiones académicas
-                                de lunes a sábado.
-                            </p>
+                            @if (puedeAjustar()) {
+                              <p>Arrastra una sesión a otro bloque. El servidor validará el cambio y deberás confirmarlo antes de guardarlo.</p>
+                            } @else {
+                              <p>Consulta de sesiones. Los horarios publicados son de solo lectura.</p>
+                            }
                         </div>
-
-                        <mat-icon>calendar_month</mat-icon>
+                        <mat-icon aria-hidden="true">calendar_month</mat-icon>
                     </div>
 
-                    <div class="calendario-grid">
+                    @if (origenArrastre()) {
+                      <div class="panel-arrastre" role="status" aria-live="polite">
+                        <div>
+                          <strong>Propuesta para sesión #{{ sesionMoverId() }}</strong>
+                          <p>Destino: {{ nombreDia(diaMover()) }}, {{ horaMover() }}.
+                            @if (validando()) { Validando con el servidor... }
+                            @else if (resultadoValidacion()?.permitido === true) { Movimiento permitido: confirma para guardar. }
+                            @else if (resultadoValidacion()?.permitido === false) { El movimiento fue rechazado. }
+                            @else { Preparando validación... }
+                          </p>
+                          @if (errorValidacion()) { <p class="arrastre-error">{{ errorValidacion() }}</p> }
+                          @if (resultadoValidacion()?.incidencias?.length) {
+                            <ul>
+                              @for (incidencia of resultadoValidacion()!.incidencias; track $index) {
+                                <li><strong>{{ incidencia.codigo }}</strong>: {{ incidencia.motivo }}</li>
+                              }
+                            </ul>
+                          }
+                        </div>
+                        <div class="acciones-arrastre">
+                          <button type="button" mat-flat-button
+                            [disabled]="!puedeAjustar() || validando() || moviendo() ||
+                              resultadoValidacion()?.permitido !== true || ultimaPropuesta() === null"
+                            (click)="moverSesion()">
+                            <mat-icon>check</mat-icon> {{ moviendo() ? 'Guardando...' : 'Confirmar movimiento' }}
+                          </button>
+                          <button type="button" mat-stroked-button [disabled]="moviendo()" (click)="cancelarArrastre()">
+                            Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    }
 
-                        @for (dia of sesionesPorDia(); track dia.numero) {
-
-                        <div class="columna-dia">
-
-                            <div class="dia-encabezado">
-                                {{ dia.nombre }}
-                            </div>
-
+                    @if (diasConFranjas().length > 0) {
+                      <div class="calendario-grid">
+                        @for (dia of diasConFranjas(); track dia.numero) {
+                          <div class="columna-dia">
+                            <div class="dia-encabezado">{{ dia.nombre }}</div>
                             <div class="dia-contenido">
-
-                                @for (sesion of dia.sesiones; track sesion.id) {
-
-                                <div class="bloque-clase" [class.aula-especial]="
-                sesion.necesitaAulaEspecial
-              ">
-
-                                    <div class="hora-clase">
-                                        <mat-icon>schedule</mat-icon>
-
-                                        {{ formatHora(sesion.horaInicio) }}
-                                        -
-                                        {{ formatHora(sesion.horaFin) }}
+                              @for (franja of dia.franjas; track franja.id) {
+                                <div class="franja-horaria"
+                                     [class.franja-ocupada]="franja.sesiones.length > 0"
+                                     cdkDropList
+                                     [id]="franja.id"
+                                     [cdkDropListData]="franja"
+                                     [cdkDropListConnectedTo]="idsFranjas()"
+                                     [cdkDropListDisabled]="!puedeAjustar() || cargando() || generando() || validando() || moviendo()"
+                                     cdkDropListSortingDisabled
+                                     (cdkDropListDropped)="soltarSesion($event)">
+                                  <div class="franja-hora">{{ franja.inicio }}–{{ franja.fin }}</div>
+                                  @for (sesion of franja.sesiones; track sesion.id) {
+                                    <div class="bloque-clase"
+                                         [class.aula-especial]="sesion.necesitaAulaEspecial"
+                                         [class.bloque-arrastrable]="puedeAjustar()"
+                                         cdkDrag
+                                         [cdkDragData]="sesion"
+                                         [cdkDragDisabled]="!puedeAjustar() || cargando() || generando() || validando() || moviendo()">
+                                      <div class="hora-clase">
+                                        <mat-icon aria-hidden="true">schedule</mat-icon>
+                                        {{ formatHora(sesion.horaInicio) }}–{{ formatHora(sesion.horaFin) }}
+                                        @if (puedeAjustar()) {
+                                          <mat-icon class="icono-arrastre" aria-hidden="true" title="Arrastrar sesión">drag_indicator</mat-icon>
+                                        }
+                                      </div>
+                                      <strong class="nombre-curso">{{ sesion.curso }}</strong>
+                                      <div class="dato-clase"><mat-icon aria-hidden="true">groups</mat-icon><span>{{ sesion.grupo }}</span></div>
+                                      <div class="dato-clase"><mat-icon aria-hidden="true">person</mat-icon><span>{{ sesion.docente }}</span></div>
+                                      @if (sesion.necesitaAulaEspecial) {
+                                        <div class="indicador-especial"><mat-icon aria-hidden="true">science</mat-icon>Aula especial requerida</div>
+                                      }
                                     </div>
-
-                                    <strong class="nombre-curso">
-                                        {{ sesion.curso }}
-                                    </strong>
-
-                                    <div class="dato-clase">
-                                        <mat-icon>groups</mat-icon>
-                                        <span>{{ sesion.grupo }}</span>
-                                    </div>
-
-                                    <div class="dato-clase">
-                                        <mat-icon>person</mat-icon>
-                                        <span>{{ sesion.docente }}</span>
-                                    </div>
-
-                                    @if (sesion.necesitaAulaEspecial) {
-
-                                    <div class="indicador-especial">
-                                        <mat-icon>science</mat-icon>
-                                        Aula especial requerida
-                                    </div>
-
-                                    }
-
+                                  } @empty {
+                                    <span class="destino-libre">{{ puedeAjustar() ? 'Soltar aquí' : 'Libre' }}</span>
+                                  }
                                 </div>
-
-                                } @empty {
-
-                                <div class="dia-vacio">
-                                    Sin clases
-                                </div>
-
-                                }
-
+                              } @empty {
+                                <p class="dia-vacio">No hay bloques disponibles en este día.</p>
+                              }
                             </div>
-
-                        </div>
-
+                          </div>
                         }
+                      </div>
+                    } @else {
+                      <p class="dia-vacio">No fue posible construir franjas con los parámetros del período.</p>
+                    }
 
-                    </div>
-
+                    @if (sesionesSinFranja().length > 0) {
+                      <div class="mensaje-error" role="status">
+                        <mat-icon>info</mat-icon>
+                        <span>Hay {{ sesionesSinFranja().length }} sesión(es) que no coinciden con las franjas configuradas. Permanecen visibles en la tabla inferior; no se podrán arrastrar.</span>
+                      </div>
+                    }
                 </section>
 
                 <div class="tabla-responsive">
