@@ -1,14 +1,14 @@
 import { Routes } from '@angular/router';
 
-import { MainLayout } from './layout/main-layout/main-layout';
-import { Dashboard } from './features/dashboard/dashboard';
-import { Login } from './features/auth/login/login';
 import { perfilGuard, sesionGuard } from './core/perfiles/perfil.guard';
 
 const OPERADORES = ['COMITE_TACTICO', 'COORDINACION_ACADEMICA'] as const;
 
 export const routes: Routes = [
-  { path: 'login', component: Login },
+  {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login/login').then(m => m.Login)
+  },
   {
     path: 'consulta-publica',
     loadComponent: () => import('./features/perfiles/consulta-publica/consulta-publica')
@@ -16,11 +16,14 @@ export const routes: Routes = [
   },
   {
     path: '',
-    component: MainLayout,
+    loadComponent: () => import('./layout/main-layout/main-layout').then(m => m.MainLayout),
     canActivateChild: [sesionGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
-      { path: 'dashboard', component: Dashboard, canActivate: [perfilGuard], data: { roles: OPERADORES } },
+      {
+        path: 'dashboard', canActivate: [perfilGuard], data: { roles: OPERADORES },
+        loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard)
+      },
       {
         path: 'docentes', canActivate: [perfilGuard], data: { roles: OPERADORES },
         loadComponent: () => import('./features/docentes/docentes').then(m => m.Docentes)
