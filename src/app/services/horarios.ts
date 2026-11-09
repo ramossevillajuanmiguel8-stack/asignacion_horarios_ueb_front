@@ -5,6 +5,11 @@ import { environment } from '../../environments/environment';
 import { Horario, SesionHorario, ResultadoGeneracion,
   PrevisualizarMovimiento, ValidacionMovimiento, ResultadoMovimiento } from '../models/horario.model';
 
+export interface PeriodoPublicadoDocente {
+  id: number;
+  nombre: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class HorariosService {
   private readonly http = inject(HttpClient);
@@ -68,5 +73,11 @@ export class HorariosService {
     const params = new HttpParams().set('periodoId', String(periodoId));
     return this.http.get<Horario | SesionHorario[]>(
       `${this.apiUrl}/docentes/me/horario-publicado`, { params });
+  }
+
+  /** Solo períodos que tienen sesiones publicadas del docente autenticado. */
+  listarPeriodosPublicadosDocente(): Observable<PeriodoPublicadoDocente[]> {
+    return this.http.get<PeriodoPublicadoDocente[]>(
+      `${this.apiUrl}/docentes/me/periodos-publicados`);
   }
 }

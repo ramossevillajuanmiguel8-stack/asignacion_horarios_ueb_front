@@ -1,20 +1,20 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Horario, SesionHorario } from '../../../models/horario.model';
-import { HorariosService } from '../../../services/horarios';
+import { HorariosService, PeriodoPublicadoDocente } from '../../../services/horarios';
 
 @Component({
   selector: 'app-mi-horario', standalone: true,
   imports: [FormsModule, MatCardModule, MatButtonModule, MatIconModule,
-    MatInputModule, MatFormFieldModule, MatProgressSpinnerModule],
+    MatFormFieldModule, MatSelectModule, MatProgressSpinnerModule],
   template: `
     <section class="panel">
       <h1><mat-icon>event</mat-icon> Mi horario publicado</h1>
@@ -22,14 +22,33 @@ import { HorariosService } from '../../../services/horarios';
       <mat-card><mat-card-content>
         <div class="filtros">
           <mat-form-field appearance="outline">
-            <mat-label>Número del período académico</mat-label>
-            <input matInput type="number" min="1" [(ngModel)]="periodoEntrada" placeholder="Ej. 1" />
+            <mat-label>Período académico</mat-label>
+            <mat-select [(ngModel)]="periodoEntrada" [disabled]="cargandoPeriodos() || cargando()"
+              (selectionChange)="limpiarConsulta()">
+              @for (periodo of periodos(); track periodo.id) {
+                <mat-option [value]="periodo.id">{{ periodo.nombre }}</mat-option>
+              }
+            </mat-select>
           </mat-form-field>
-          <button mat-flat-button [disabled]="cargando()" (click)="consultar()">
+          <button mat-flat-button [disabled]="cargando() || cargandoPeriodos() || periodoEntrada === null"
+            (click)="consultar()">
             <mat-icon>search</mat-icon> Consultar mi horario
           </button>
         </div>
-        @if (cargando()) { <mat-spinner diameter="30"></mat-spinner> }
+        @if (cargandoPeriodos()) {
+          <p>Cargando períodos publicados...</p>
+          <mat-spinner diameter="30" aria-label="Cargando períodos"></mat-spinner>
+        }
+        @if (errorPeriodos()) {
+          <p class="error" role="alert">{{ errorPeriodos() }}</p>
+          <button mat-button [disabled]="cargandoPeriodos()" (click)="cargarPeriodos()">
+            Reintentar
+          </button>
+        }
+        @if (!cargandoPeriodos() && !errorPeriodos() && periodos().length === 0) {
+          <p>No tienes períodos con sesiones publicadas disponibles.</p>
+        }
+        @if (cargando()) { <mat-spinner diameter="30" aria-label="Consultando horario"></mat-spinner> }
         @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
         @if (consultado()) {
           <p>{{ sesiones().length }} sesión(es) publicadas para este docente en el período.</p>
@@ -58,9 +77,12 @@ import { HorariosService } from '../../../services/horarios';
     th{background:#f0f7f4}
   `]
 })
-export class MiHorario {
+export class MiHorario implements OnInit {
   private readonly horarios = inject(HorariosService);
   periodoEntrada: number | null = null;
+  readonly periodos = signal<PeriodoPublicadoDocente[]>([]);
+  readonly cargandoPeriodos = signal(false);
+  readonly errorPeriodos = signal('');
   readonly sesiones = signal<SesionHorario[]>([]);
   readonly cargando = signal(false);
   readonly consultado = signal(false);
@@ -68,25 +90,58 @@ export class MiHorario {
   readonly sesionesOrdenadas = computed(() => [...this.sesiones()].sort((a, b) =>
     a.dia - b.dia || a.horaInicio.localeCompare(b.horaInicio)));
 
-  consultar(): void {
-    const id = Number(this.periodoEntrada);
-    if (!Number.isInteger(id) || id <= 0 || this.cargando()) {
-      this.error.set('Ingresa un número de período válido.');
-      return;
-    }
-    this.cargando.set(true);
+  ngOnInit(): void {
+    this.cargarPeriodos();
+  }
+
+  cargarPeriodos(): void {
+    if (this.cargandoPeriodos()) return;
+    this.cargandoPeriodos.set(true);
+    this.errorPeriodos.set('');
+    this.periodos.set([]);
+    this.periodoEntrada = null;
+    this.limpiarConsulta();
+    this.horarios.listarPeriodosPublicadosDocente()
+      .pipe(finalize(() => this.cargandoPeriodos.set(false)))
+      .subscribe({
+        next: periodos => {
+          this.periodos.set(periodos);
+          if (periodos.length === 1) this.periodoEntrada = periodos[0].id;
+        },
+        error: (err: HttpErrorResponse) => this.errorPeriodos.set(err.status === 401
+          ? 'Tu sesión ha caducado. Inicia sesión nuevamente.'
+          : err.status === 403
+            ? 'Tu usuario no tiene permiso para consultar los períodos del docente.'
+            : 'No fue posible cargar los períodos académicos.')
+      });
+  }
+
+  limpiarConsulta(): void {
     this.consultado.set(false);
     this.error.set('');
     this.sesiones.set([]);
+  }
+
+  consultar(): void {
+    const id = Number(this.periodoEntrada);
+    if (!Number.isInteger(id) || id <= 0 || !this.periodos().some(p => p.id === id)) {
+      this.error.set('Selecciona un período académico disponible.');
+      return;
+    }
+    if (this.cargando() || this.cargandoPeriodos()) return;
+    this.cargando.set(true);
+    this.limpiarConsulta();
     this.horarios.obtenerHorarioDocente(id).pipe(finalize(() => this.cargando.set(false)))
       .subscribe({
         next: respuesta => {
           this.sesiones.set(Array.isArray(respuesta) ? respuesta : (respuesta as Horario).sesiones ?? []);
           this.consultado.set(true);
         },
-        error: (error: HttpErrorResponse) => this.error.set(error.status === 404
+        error: (err: HttpErrorResponse) => this.error.set(err.status === 404
           ? 'El docente no tiene horario publicado en este período.'
-          : 'No fue posible consultar tu horario.')
+          : err.status === 401
+            ? 'Tu sesión ha caducado. Inicia sesión nuevamente.'
+            : 'No fue posible consultar tu horario.')
       });
   }
 
