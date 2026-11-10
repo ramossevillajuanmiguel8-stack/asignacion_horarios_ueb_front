@@ -9,11 +9,7 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./features/auth/login/login').then(m => m.Login)
   },
-  {
-    path: 'consulta-publica',
-    loadComponent: () => import('./features/perfiles/consulta-publica/consulta-publica')
-      .then(m => m.ConsultaPublica)
-  },
+
   {
     path: '',
     loadComponent: () => import('./layout/main-layout/main-layout').then(m => m.MainLayout),
@@ -46,6 +42,8 @@ export const routes: Routes = [
         path: 'horarios', canActivate: [perfilGuard], data: { roles: OPERADORES },
         loadComponent: () => import('./features/horarios/horarios').then(m => m.Horarios)
       },
+      { path: 'usuarios', canActivate: [perfilGuard], data: { roles: ['COMITE_TACTICO'] },
+        loadComponent: () => import('./features/usuarios/usuarios').then(m => m.Usuarios) },
       {
         path: 'aprobacion', canActivate: [perfilGuard], data: { roles: ['COMITE_TACTICO'] },
         loadComponent: () => import('./features/perfiles/aprobacion/aprobacion').then(m => m.Aprobacion)

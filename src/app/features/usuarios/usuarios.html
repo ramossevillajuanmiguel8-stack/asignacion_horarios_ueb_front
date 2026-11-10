@@ -1,0 +1,103 @@
+<section class="usuarios-page">
+  <header class="page-header">
+    <div>
+      <h1><mat-icon>manage_accounts</mat-icon> Gestión de usuarios</h1>
+      <p>Administración exclusiva de Comité Táctico. Las contraseñas no se muestran ni se almacenan en el navegador.</p>
+    </div>
+    <button mat-flat-button type="button" (click)="nuevo()" [disabled]="procesando()">
+      <mat-icon>person_add</mat-icon> Crear usuario
+    </button>
+  </header>
+
+  @if (mensaje()) { <p class="ok" role="status">{{ mensaje() }}</p> }
+  @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+
+  @if (mostrarFormulario()) {
+    <section class="panel formulario">
+      <h2>Crear cuenta</h2>
+      <form #f="ngForm" (ngSubmit)="crear()">
+        <div class="campos">
+          <mat-form-field appearance="outline">
+            <mat-label>Identificador de acceso</mat-label>
+            <input matInput name="identificador" required minlength="3" maxlength="100"
+              [(ngModel)]="formulario.identificador" autocomplete="off" placeholder="usuario@universidad.edu.co">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Contraseña inicial</mat-label>
+            <input matInput type="password" name="password" required minlength="12" maxlength="72"
+              [(ngModel)]="formulario.password" autocomplete="new-password">
+            <mat-hint>12–72 caracteres. Compártela de forma privada.</mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Rol</mat-label>
+            <mat-select name="rol" [(ngModel)]="formulario.rol" required
+              (selectionChange)="formulario.docenteId = null">
+              @for (rol of roles; track rol.valor) {
+                <mat-option [value]="rol.valor">{{ rol.etiqueta }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          @if (formulario.rol === 'DOCENTE') {
+            <mat-form-field appearance="outline">
+              <mat-label>Docente vinculado</mat-label>
+              <mat-select name="docenteId" [(ngModel)]="formulario.docenteId" required>
+                @for (d of docentes(); track d.id) {
+                  <mat-option [value]="d.id">{{ d.nombre }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+        </div>
+        <div class="acciones">
+          <button mat-stroked-button type="button" (click)="mostrarFormulario.set(false)">Cancelar</button>
+          <button mat-flat-button type="submit" [disabled]="f.invalid || procesando()">
+            <mat-icon>save</mat-icon> Guardar usuario
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  <section class="panel">
+    <div class="barra">
+      <h2>Cuentas registradas</h2>
+      <div class="filtros">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Buscar usuario</mat-label>
+          <input matInput [ngModel]="filtro()" (ngModelChange)="filtro.set($event)" name="filtro">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        <button mat-stroked-button type="button" (click)="recargar()" [disabled]="cargando()">Actualizar</button>
+      </div>
+    </div>
+    @if (cargando()) { <p>Cargando usuarios...</p> }
+    <div class="tabla-scroll">
+      <table>
+        <thead><tr><th>Identificador</th><th>Rol</th><th>Docente asociado</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>
+          @for (u of filtrados(); track u.id) {
+            <tr>
+              <td>{{ u.identificador }}</td>
+              <td>{{ etiquetaRol(u.rol) }}</td>
+              <td>{{ u.docenteNombre || '—' }}</td>
+              <td><span [class.inactivo]="!u.activo" class="estado">{{ u.activo ? 'Activo' : 'Inactivo' }}</span></td>
+              <td>
+                @if (confirmarId() === u.id) {
+                  <span class="confirmacion">¿Confirmar {{ u.activo ? 'desactivación' : 'activación' }}?</span>
+                  <button mat-button type="button" (click)="cambiarEstado(u)" [disabled]="procesando()">Confirmar</button>
+                  <button mat-button type="button" (click)="confirmarId.set(null)">Cancelar</button>
+                } @else {
+                  <button mat-stroked-button type="button" (click)="solicitarEstado(u.id)" [disabled]="procesando()">
+                    {{ u.activo ? 'Desactivar' : 'Activar' }}
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5">No hay usuarios que coincidan con la búsqueda.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>

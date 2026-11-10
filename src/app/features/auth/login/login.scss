@@ -123,19 +123,6 @@
   color:#526c66; font-size:12px; text-align:center; }
 .leyenda-seguridad mat-icon {font-size:18px;width:18px;height:18px;color:#087565}
 .mensaje.error { color:var(--ueb-error); background:var(--ueb-error-soft); border-radius:6px; padding:10px; }
-.enlace-estudiante {
-  display: block;
-  text-align: center;
-  margin-top: 14px;
-  font-size: 13px;
-  color: #006b58;
-  text-decoration-color: #006b58;
-
-  &:hover {
-    color: var(--ueb-primary, #004040);
-  }
-}
-
 .footer {
   margin-top: 25px;
   text-align: center;
