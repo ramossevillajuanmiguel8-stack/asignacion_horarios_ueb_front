@@ -1,3 +1,4 @@
+import { AulaEtiqueta } from '../aulas/aula-etiqueta';
 import {
   Component,
   OnInit,
@@ -40,6 +41,7 @@ import { construirDiasHorario, FranjaHorario, sesionesFueraDeFranja } from './ho
   selector: 'app-horarios',
   standalone: true,
   imports: [
+    AulaEtiqueta,
     DatePipe,
     MatInputModule,
     MatCardModule,

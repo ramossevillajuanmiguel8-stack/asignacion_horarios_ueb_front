@@ -320,7 +320,7 @@
                                       </div>
                                       <strong class="nombre-curso">{{ sesion.curso }}</strong>
                                       <div class="dato-clase"><mat-icon aria-hidden="true">groups</mat-icon><span>{{ sesion.grupo }}</span></div>
-                                      <div class="dato-clase"><mat-icon aria-hidden="true">person</mat-icon><span>{{ sesion.docente }}</span></div>
+                                      <div class="dato-clase"><mat-icon aria-hidden="true">person</mat-icon><span>{{ sesion.docente }} <app-aula-etiqueta [horarioId]="horario.id" [sesionId]="sesion.id" [publico]="horario.estado === 'PUBLICADO'"></app-aula-etiqueta></span></div>
                                       @if (sesion.necesitaAulaEspecial) {
                                         <div class="indicador-especial"><mat-icon aria-hidden="true">science</mat-icon>Aula especial requerida</div>
                                       }
@@ -375,7 +375,7 @@
 
                                 <td>{{ sesion.grupo }}</td>
                                 <td>{{ sesion.curso }}</td>
-                                <td>{{ sesion.docente }}</td>
+                                <td>{{ sesion.docente }} <app-aula-etiqueta [horarioId]="horario.id" [sesionId]="sesion.id" [publico]="horario.estado === 'PUBLICADO'"></app-aula-etiqueta></td>
 
                                 <td>
                                     {{ sesion.necesitaAulaEspecial ? 'Sí' : 'No' }}

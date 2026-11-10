@@ -75,7 +75,7 @@ export class HorariosService {
   }
 
   urlCsvPublico(periodoId: number, cursoId: number): string {
-    return `${this.apiUrl}/publico/periodos/${periodoId}/cursos/${cursoId}/exportar.csv`;
+    return `${this.apiUrl}/publico/aulas/periodos/${periodoId}/cursos/${cursoId}/exportar.csv`;
   }
 
   /** El docente autenticado se deduce de Spring Security, no de un ID enviado por el navegador. */

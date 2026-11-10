@@ -1,3 +1,4 @@
+import { AulaEtiqueta } from '../../aulas/aula-etiqueta';
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -17,7 +18,7 @@ interface CursoPublicado { id: number; nombre: string; }
 
 @Component({
   selector: 'app-consulta-publica', standalone: true,
-  imports: [RouterLink, FormsModule, MatCardModule, MatButtonModule, MatIconModule,
+  imports: [AulaEtiqueta,RouterLink, FormsModule, MatCardModule, MatButtonModule, MatIconModule,
     MatFormFieldModule, MatSelectModule, MatInputModule, MatProgressSpinnerModule],
   templateUrl: './consulta-publica.html', styleUrl: './consulta-publica.scss'
 })

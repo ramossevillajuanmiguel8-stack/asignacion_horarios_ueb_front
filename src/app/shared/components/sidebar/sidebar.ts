@@ -19,6 +19,7 @@ const MENU: ItemMenu[] = [
   { nombre: 'Asignaturas', icono: 'menu_book', ruta: '/asignaturas', roles: OPERADORES },
   { nombre: 'Períodos', icono: 'date_range', ruta: '/periodos', roles: OPERADORES },
   { nombre: 'Grupos', icono: 'groups', ruta: '/grupos', roles: OPERADORES },
+  { nombre: 'Aulas', icono: 'meeting_room', ruta: '/aulas', roles: OPERADORES },
   { nombre: 'Horarios', icono: 'calendar_month', ruta: '/horarios', roles: OPERADORES },
   { nombre: 'Aprobación y cierre', icono: 'fact_check', ruta: '/aprobacion', roles: ['COMITE_TACTICO'] },
   { nombre: 'Mi horario', icono: 'event', ruta: '/mi-horario', roles: ['DOCENTE'] }

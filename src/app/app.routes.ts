@@ -40,6 +40,8 @@ export const routes: Routes = [
         path: 'grupos', canActivate: [perfilGuard], data: { roles: OPERADORES },
         loadComponent: () => import('./features/grupos/grupos').then(m => m.Grupos)
       },
+      { path: 'aulas', canActivate: [perfilGuard], data: { roles: OPERADORES },
+        loadComponent: () => import('./features/aulas/aulas').then(m => m.Aulas) },
       {
         path: 'horarios', canActivate: [perfilGuard], data: { roles: OPERADORES },
         loadComponent: () => import('./features/horarios/horarios').then(m => m.Horarios)
