@@ -1,3 +1,4 @@
+import { AulaEtiqueta } from '../../aulas/aula-etiqueta';
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -14,7 +15,7 @@ import { construirSemanaDocente } from './mi-horario-calendario';
 
 @Component({
   selector: 'app-mi-horario', standalone: true,
-  imports: [FormsModule, MatCardModule, MatButtonModule, MatIconModule,
+  imports: [AulaEtiqueta,FormsModule, MatCardModule, MatButtonModule, MatIconModule,
     MatFormFieldModule, MatSelectModule, MatProgressSpinnerModule],
   template: `
     <section class="panel">
@@ -98,7 +99,7 @@ import { construirSemanaDocente } from './mi-horario-calendario';
                           <strong>{{ evento.sesion.curso }}</strong>
                           <span>{{ evento.sesion.horaInicio.slice(0,5) }}–{{ evento.sesion.horaFin.slice(0,5) }}</span>
                           @if (!evento.compacto) { <small>Grupo {{ evento.sesion.grupo }}</small> }
-                        </article>
+                        <app-aula-etiqueta [horarioId]="horarioId() ?? 0" [sesionId]="evento.sesion.id" [publico]="true"></app-aula-etiqueta></article>
                       }
                     </div>
                   }
@@ -109,13 +110,13 @@ import { construirSemanaDocente } from './mi-horario-calendario';
           }
           @if (vista() === 'tabla' || sesiones().length === 0) {
             <div class="tabla"><table>
-              <thead><tr><th>Día</th><th>Inicio</th><th>Fin</th><th>Curso</th><th>Grupo</th></tr></thead>
+              <thead><tr><th>Día</th><th>Inicio</th><th>Fin</th><th>Curso</th><th>Grupo</th><th>Aula</th></tr></thead>
               <tbody>
                 @for (sesion of sesionesOrdenadas(); track sesion.id) {
                   <tr><td>{{ nombreDia(sesion.dia) }}</td><td>{{ sesion.horaInicio.slice(0,5) }}</td>
                     <td>{{ sesion.horaFin.slice(0,5) }}</td><td>{{ sesion.curso }}</td>
-                    <td>{{ sesion.grupo }}</td></tr>
-                } @empty { <tr><td colspan="5">No hay sesiones publicadas.</td></tr> }
+                    <td>{{ sesion.grupo }}</td><td><app-aula-etiqueta [horarioId]="horarioId() ?? 0" [sesionId]="sesion.id" [publico]="true"></app-aula-etiqueta></td></tr>
+                } @empty { <tr><td colspan="6">No hay sesiones publicadas.</td></tr> }
               </tbody>
             </table></div>
           }
@@ -158,6 +159,7 @@ import { construirSemanaDocente } from './mi-horario-calendario';
 })
 export class MiHorario implements OnInit {
   private readonly horarios = inject(HorariosService);
+  readonly horarioId = signal<number | null>(null);
   periodoEntrada: number | null = null;
   readonly periodos = signal<PeriodoPublicadoDocente[]>([]);
   readonly cargandoPeriodos = signal(false);
@@ -212,6 +214,8 @@ export class MiHorario implements OnInit {
     if (this.cargando() || this.cargandoPeriodos()) return;
     this.cargando.set(true);
     this.limpiarConsulta();
+    this.horarioId.set(null);
+    this.horarios.obtenerVigentePublico(id).subscribe({next: h => this.horarioId.set(h.id), error: () => {}});
     this.horarios.obtenerHorarioDocente(id).pipe(finalize(() => this.cargando.set(false)))
       .subscribe({
         next: respuesta => {

@@ -1,0 +1,74 @@
+<section class="aulas-page">
+  <header class="page-header">
+    <div><h1><mat-icon>meeting_room</mat-icon> Gestión de aulas</h1><p>Catálogo, características, disponibilidad y asignación a las clases.</p></div>
+    <button mat-stroked-button (click)="recargar()"><mat-icon>refresh</mat-icon> Actualizar</button>
+  </header>
+  <nav class="pestanas" aria-label="Opciones de aulas">
+    <button [class.activo]="pestana()==='catalogo'" (click)="pestana.set('catalogo')"><mat-icon>meeting_room</mat-icon> Catálogo de aulas</button>
+    <button [class.activo]="pestana()==='requisitos'" (click)="pestana.set('requisitos')"><mat-icon>menu_book</mat-icon> Tipos por asignatura</button>
+    <button [class.activo]="pestana()==='asignaciones'" (click)="pestana.set('asignaciones')"><mat-icon>calendar_today</mat-icon> Asignación de aulas</button>
+  </nav>
+  @if (error()) {<div class="error" role="alert">{{error()}}</div>}
+  @if (mensaje()) {<div class="ok" role="status">{{mensaje()}}</div>}
+
+  @if (pestana()==='catalogo') {
+    <div class="panel">
+      <div class="barra"><label>Buscar aula <input [ngModel]="filtro()" (ngModelChange)="filtro.set($event)" placeholder="Código, tipo, edificio..."></label>
+      <button mat-flat-button (click)="nuevo()"><mat-icon>add</mat-icon> Nueva aula</button></div>
+      @if (formulario()) {
+        <form class="formulario" (ngSubmit)="guardar()">
+          <h2>{{actual.id ? 'Editar aula':'Registrar aula'}}</h2>
+          <div class="campos">
+            <label>Código *<input required maxlength="32" name="codigo" [(ngModel)]="actual.codigo" placeholder="LAB-C1"></label>
+            <label>Nombre *<input required maxlength="100" name="nombre" [(ngModel)]="actual.nombre" placeholder="Laboratorio C1"></label>
+            <label>Tipo *<select name="tipo" [(ngModel)]="actual.tipo">@for(t of tipos;track t){<option [value]="t">{{nombreTipo(t)}}</option>}</select></label>
+            <label>Edificio *<input required name="edificio" [(ngModel)]="actual.edificio" placeholder="Bloque C"></label>
+            <label>Piso *<input required name="piso" [(ngModel)]="actual.piso" placeholder="2"></label>
+            <label>Capacidad *<input required type="number" min="1" max="1000" name="capacidad" [(ngModel)]="actual.capacidad"></label>
+            <label>Estado<select name="activa" [(ngModel)]="actual.activa"><option [ngValue]="true">Activa</option><option [ngValue]="false">Inactiva</option></select></label>
+            <label>Observaciones<input maxlength="255" name="observaciones" [(ngModel)]="actual.observaciones" placeholder="Equipos, accesibilidad, etc."></label>
+          </div>
+          <div class="acciones"><button mat-stroked-button type="button" (click)="formulario.set(false)">Cancelar</button><button mat-flat-button type="submit" [disabled]="procesando()">Guardar aula</button></div>
+        </form>
+      }
+      <div class="tabla-scroll"><table><thead><tr><th>Código</th><th>Nombre</th><th>Tipo</th><th>Edificio</th><th>Piso</th><th>Cupo</th><th>Estado</th><th>Acción</th></tr></thead>
+      <tbody>@for(a of filtradas();track a.id){<tr><td><strong>{{a.codigo}}</strong></td><td>{{a.nombre}}</td><td><span class="tipo">{{nombreTipo(a.tipo)}}</span></td><td>{{a.edificio}}</td><td>{{a.piso}}</td><td>{{a.capacidad}}</td><td>{{a.activa?'Activa':'Inactiva'}}</td><td><button mat-stroked-button (click)="editar(a)">Editar</button></td></tr>}
+      @empty {<tr><td colspan="8">No hay aulas registradas. Crea tu primera aula.</td></tr>}</tbody></table></div>
+    </div>
+  }
+  @if (pestana()==='requisitos') {
+    <div class="panel"><h2>Tipo de aula que necesita cada asignatura</h2>
+      <p>La elección permite diferenciar aulas de computación, pedagógicas, laboratorios y multimedia. Si no seleccionas un tipo explícito, las asignaturas con “aula especial” se interpretan inicialmente como computación.</p>
+      <div class="tabla-scroll"><table><thead><tr><th>Código</th><th>Asignatura</th><th>Tipo requerido</th><th>Acción</th></tr></thead><tbody>
+      @for(c of cursos();track c.id){<tr><td>{{c.codigo}}</td><td>{{c.nombre}}</td><td><select [ngModel]="tipoCurso(c)" (ngModelChange)="tipoPorCurso[c.id]=$event">@for(t of tipos;track t){<option [ngValue]="t">{{nombreTipo(t)}}</option>}</select></td>
+      <td><button mat-stroked-button (click)="guardarTipo(c)">Guardar</button></td></tr>}
+      </tbody></table></div>
+    </div>
+  }
+  @if (pestana()==='asignaciones') {
+    <div class="panel"><h2>Asignación de aulas a sesiones</h2>
+      <div class="barra">
+        <label>Período académico<select [(ngModel)]="periodoId" (ngModelChange)="cambiarPeriodo()">@for(p of periodos();track p.id){<option [ngValue]="p.id">{{p.nombre}}</option>}</select></label>
+        <label>Horario<select [(ngModel)]="horarioId" (ngModelChange)="cambiarHorario()">@for(h of horarios();track h.id){<option [ngValue]="h.id">Horario #{{h.id}} · {{h.estado}}</option>}</select></label>
+        @if (horario()?.estado === 'BORRADOR') {
+          <button mat-flat-button (click)="autoasignar()" [disabled]="procesando()"><mat-icon>auto_awesome</mat-icon> Asignar automáticamente</button>
+        } @else if (horario()?.estado === 'PUBLICADO') {
+          <button mat-flat-button (click)="completarPublicado()" [disabled]="procesando()"><mat-icon>check_circle_outline</mat-icon> Completar aulas faltantes</button>
+        }
+      </div>
+      @if (horario();as h){
+        <p>Selecciona un aula por sesión o utiliza la asignación automática. No se admiten aulas ocupadas, de tipo incorrecto o sin capacidad. En publicados puedes completar únicamente aulas pendientes, sin cambiar las clases ni las asignaciones existentes.</p>
+        <div class="tabla-scroll"><table><thead><tr><th>Día</th><th>Franja</th><th>Asignatura</th><th>Grupo</th><th>Docente</th><th>Aula</th><th>Acción</th></tr></thead>
+        <tbody>@for(s of h.sesiones;track s.id){<tr>
+          <td>{{nombreDia(s.dia)}}</td><td>{{s.horaInicio.slice(0,5)}}–{{s.horaFin.slice(0,5)}}</td><td><strong>{{s.curso}}</strong></td><td>{{s.grupo}}</td><td>{{s.docente}}</td>
+          <td><select [disabled]="h.estado!=='BORRADOR' || procesando()" [ngModel]="seleccionadoPorSesion[s.id]??null" (ngModelChange)="seleccionadoPorSesion[s.id]=$event">
+            <option [ngValue]="null">Sin aula</option>
+            @for(a of aulas();track a.id){@if(a.activa){<option [ngValue]="a.id">{{a.codigo}} · {{nombreTipo(a.tipo)}} · {{a.capacidad}} cupos</option>}}
+          </select>
+          @if(aulaPara(s.id);as asignada){<div class="asignada">Aula {{asignada.codigo}} · {{asignada.edificio}}</div>}@else{<div class="pendiente">Pendiente</div>}
+          </td><td><button mat-stroked-button (click)="asignar(s.id)" [disabled]="h.estado!=='BORRADOR' || procesando()">Guardar</button></td>
+        </tr>} @empty {<tr><td colspan="7">No hay sesiones en este horario.</td></tr>}</tbody></table></div>
+      } @else {<p>Selecciona un período con un horario generado.</p>}
+    </div>
+  }
+</section>
