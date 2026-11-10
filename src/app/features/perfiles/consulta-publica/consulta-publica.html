@@ -12,11 +12,18 @@
       <p class="aviso">Solo se muestran horarios publicados. No se necesita una cuenta para consultar.</p>
       <div class="filtros">
         <mat-form-field appearance="outline">
-          <mat-label>Número del período</mat-label>
-          <input matInput type="number" min="1" step="1" [(ngModel)]="periodoEntrada"
-                 placeholder="Ej. 4" aria-label="ID del período académico" />
+          <mat-label>Período académico</mat-label>
+          <mat-select [(ngModel)]="periodoEntrada" (selectionChange)="limpiarPeriodo()"
+                      [disabled]="cargandoPeriodos() || cargando() || consultando()"
+                      aria-label="Seleccionar período académico publicado">
+            @for (periodo of periodos(); track periodo.id) {
+              <mat-option [value]="periodo.id">{{ periodo.nombre }}</mat-option>
+            }
+          </mat-select>
         </mat-form-field>
-        <button mat-flat-button type="button" [disabled]="cargando()" (click)="cargarPeriodo()">
+        <button mat-flat-button type="button"
+                [disabled]="cargandoPeriodos() || cargando() || consultando() || periodoEntrada === null"
+                (click)="cargarPeriodo()">
           <mat-icon>calendar_month</mat-icon> Cargar período
         </button>
         @if (periodoId() !== null) {
@@ -32,8 +39,20 @@
                   (click)="consultar()"><mat-icon>search</mat-icon> Consultar</button>
         }
       </div>
-      <p class="ayuda-periodo">Nota: el backend aún no ofrece un catálogo público de períodos;
-        por eso la consulta comienza con el número del período.</p>
+      @if (cargandoPeriodos()) {
+        <div class="cargando" role="status">
+          <mat-spinner diameter="28" aria-label="Cargando períodos publicados"></mat-spinner>
+          Cargando períodos publicados...
+        </div>
+      }
+      @if (errorPeriodos()) {
+        <p class="error" role="alert">{{ errorPeriodos() }}</p>
+        <button mat-stroked-button type="button" [disabled]="cargandoPeriodos()"
+                (click)="cargarPeriodos()">Reintentar</button>
+      }
+      @if (!cargandoPeriodos() && !errorPeriodos() && periodos().length === 0) {
+        <p class="ayuda-periodo" role="status">No hay períodos con horarios publicados disponibles para consulta.</p>
+      }
       @if (cargando() || consultando()) {
         <div class="cargando"><mat-spinner diameter="28"></mat-spinner> Consultando...</div>
       }

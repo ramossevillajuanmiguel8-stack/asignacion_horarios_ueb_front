@@ -10,6 +10,11 @@ export interface PeriodoPublicadoDocente {
   nombre: string;
 }
 
+export interface PeriodoPublicadoPublico {
+  id: number;
+  nombre: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class HorariosService {
   private readonly http = inject(HttpClient);
@@ -54,7 +59,12 @@ export class HorariosService {
       `${this.apiUrl}/horarios/${horarioId}/sesiones/${sesionId}`, datos);
   }
 
-  /** Estos tres endpoints son PÚBLICOS y no requieren /periodos ni /cursos administrativos. */
+  /** Catálogo anónimo: exclusivamente períodos con un horario publicado vigente. */
+  listarPeriodosPublicadosPublicos(): Observable<PeriodoPublicadoPublico[]> {
+    return this.http.get<PeriodoPublicadoPublico[]>(`${this.apiUrl}/publico/periodos-publicados`);
+  }
+
+  /** Consulta pública de horarios, sesiones y exportación CSV. */
   obtenerVigentePublico(periodoId: number): Observable<Horario> {
     return this.http.get<Horario>(`${this.apiUrl}/publico/periodos/${periodoId}/horario-vigente`);
   }

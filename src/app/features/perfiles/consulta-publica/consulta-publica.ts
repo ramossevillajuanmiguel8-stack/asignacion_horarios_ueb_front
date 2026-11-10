@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -11,7 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Horario, SesionHorario } from '../../../models/horario.model';
-import { HorariosService } from '../../../services/horarios';
+import { HorariosService, PeriodoPublicadoPublico } from '../../../services/horarios';
 
 interface CursoPublicado { id: number; nombre: string; }
 
@@ -21,9 +21,12 @@ interface CursoPublicado { id: number; nombre: string; }
     MatFormFieldModule, MatSelectModule, MatInputModule, MatProgressSpinnerModule],
   templateUrl: './consulta-publica.html', styleUrl: './consulta-publica.scss'
 })
-export class ConsultaPublica {
+export class ConsultaPublica implements OnInit {
   private readonly horariosService = inject(HorariosService);
   periodoEntrada: number | null = null;
+  readonly periodos = signal<PeriodoPublicadoPublico[]>([]);
+  readonly cargandoPeriodos = signal(false);
+  readonly errorPeriodos = signal('');
   periodoId = signal<number | null>(null);
   cursoId = signal<number | null>(null);
   cursos = signal<CursoPublicado[]>([]);
@@ -40,21 +43,50 @@ export class ConsultaPublica {
       ? this.horariosService.urlCsvPublico(periodo, curso) : null;
   });
 
-  cargarPeriodo(): void {
-    const id = Number(this.periodoEntrada);
-    if (!Number.isInteger(id) || id <= 0 || this.cargando()) {
-      this.error.set('Ingresa el número válido de un período académico.');
-      return;
-    }
-    this.cargando.set(true);
-    this.error.set('');
+  ngOnInit(): void {
+    this.cargarPeriodos();
+  }
+
+  cargarPeriodos(): void {
+    if (this.cargandoPeriodos()) return;
+    this.cargandoPeriodos.set(true);
+    this.errorPeriodos.set('');
+    this.periodos.set([]);
+    this.periodoEntrada = null;
+    this.limpiarPeriodo();
+
+    this.horariosService.listarPeriodosPublicadosPublicos().pipe(
+      finalize(() => this.cargandoPeriodos.set(false))
+    ).subscribe({
+      next: periodos => {
+        this.periodos.set(periodos);
+        if (periodos.length === 1) this.periodoEntrada = periodos[0].id;
+      },
+      error: () => this.errorPeriodos.set(
+        'No se pudieron cargar los períodos publicados. Comprueba la conexión y reintenta.')
+    });
+  }
+
+  limpiarPeriodo(): void {
     this.periodoId.set(null);
     this.cursoId.set(null);
     this.horario.set(null);
     this.cursos.set([]);
     this.sesiones.set([]);
     this.consultaRealizada.set(false);
+    this.error.set('');
+  }
 
+  cargarPeriodo(): void {
+    const id = Number(this.periodoEntrada);
+    if (!Number.isInteger(id) || id <= 0 || !this.periodos().some(p => p.id === id)) {
+      this.error.set('Selecciona un período académico disponible.');
+      return;
+    }
+    if (this.cargando() || this.cargandoPeriodos() || this.consultando()) return;
+
+    this.limpiarPeriodo();
+    this.cargando.set(true);
     this.horariosService.obtenerVigentePublico(id).pipe(
       finalize(() => this.cargando.set(false))
     ).subscribe({
@@ -72,7 +104,7 @@ export class ConsultaPublica {
         this.cursos.set([...cursos].map(([cursoId, nombre]) => ({ id: cursoId, nombre }))
           .sort((a, b) => a.nombre.localeCompare(b.nombre)));
       },
-      error: (error: HttpErrorResponse) => this.error.set(error.status === 404
+      error: (err: HttpErrorResponse) => this.error.set(err.status === 404
         ? 'No existe un horario publicado para ese período.'
         : 'No se pudo consultar el período. Revisa la conexión con el backend.')
     });
